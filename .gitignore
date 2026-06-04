@@ -5,3 +5,5 @@ coverage/
 dist/
 *.tsbuildinfo
 .env
+memory
+.playwright
