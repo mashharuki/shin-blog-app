@@ -1,0 +1,22 @@
+{
+  "name": "shin-blog-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "biome:format": "npx biome format --write .",
+    "biome:format:check": "npx biome format .",
+    "biome:check": "npx biome check --write .",
+    "shared": "pnpm --filter @shin-blog-app/shared",
+    "cdk": "pnpm --filter @shin-blog-app/cdk",
+    "frontend": "pnpm --filter @shin-blog-app/frontend",
+    "backend": "pnpm --filter @shin-blog-app/backend"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.33.0",
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4"
+  }
+}
