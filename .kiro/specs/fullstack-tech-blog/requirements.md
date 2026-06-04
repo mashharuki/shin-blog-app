@@ -1,3 +1,6 @@
+# Requirements Document
+
+## Project Description (Input)
 # 学習用の本格的フルスタック技術ブログアプリの要件
 
 ## 開発原則
@@ -56,3 +59,6 @@
   - playwright
   - tailwind CSS
   - shadcn/ui
+
+## Requirements
+<!-- Will be generated in /kiro-spec-requirements phase -->
