@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shin Tech Blog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- highlight.js (GitHub Dark theme) -->
+  <link rel="stylesheet" href="https://unpkg.com/@highlightjs/cdn-assets@11.9.0/styles/github-dark.min.css">
+
+  <style>
+    /* ── CSS Variables ── */
+    :root {
+      --bg:            #ffffff;
+      --bg-secondary:  #f8fafc;
+      --bg-tertiary:   #f1f5f9;
+      --surface:       #ffffff;
+      --border:        #e2e8f0;
+      --border-light:  #f1f5f9;
+      --text:          #0f172a;
+      --text-secondary:#475569;
+      --text-muted:    #94a3b8;
+      --primary:       #3b82f6;
+      --primary-hover: #2563eb;
+      --primary-light: rgba(59,130,246,0.1);
+      --primary-text:  #1d4ed8;
+      --card-padding:  18px 20px 16px;
+    }
+    [data-theme="dark"] {
+      --bg:            #0f172a;
+      --bg-secondary:  #1e293b;
+      --bg-tertiary:   #263347;
+      --surface:       #1e293b;
+      --border:        #334155;
+      --border-light:  #263347;
+      --text:          #f1f5f9;
+      --text-secondary:#94a3b8;
+      --text-muted:    #64748b;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: 'Inter', 'Noto Sans JP', system-ui, sans-serif; font-size: 16px; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; transition: background 0.2s, color 0.2s; }
+    input, button, textarea, select { font-family: inherit; }
+    a { color: var(--primary); }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ── Markdown content ── */
+    .md-content { line-height: 1.85; }
+    .md-content h1 { font-size: 1.65em; font-weight: 800; border-bottom: 2px solid var(--border); padding-bottom: .3em; margin: 1.6em 0 .6em; color: var(--text); letter-spacing: -.3px; }
+    .md-content h2 { font-size: 1.3em; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: .2em; margin: 1.5em 0 .5em; color: var(--text); }
+    .md-content h3 { font-size: 1.1em; font-weight: 700; margin: 1.3em 0 .4em; color: var(--text); }
+    .md-content p  { margin: .8em 0; color: var(--text); }
+    .md-content code {
+      background: var(--bg-secondary); padding: 2px 6px; border-radius: 5px;
+      font-family: 'JetBrains Mono','Fira Code','SF Mono',monospace; font-size: .85em; color: var(--primary);
+    }
+    .md-content pre {
+      background: #0d1117; border-radius: 10px; padding: 18px 20px;
+      overflow-x: auto; margin: 1.1em 0;
+      border: 1px solid #30363d;
+    }
+    .md-content pre code { background: transparent; color: #e6edf3; padding: 0; font-size: .84em; line-height: 1.7; }
+    .md-content pre code.hljs { padding: 0; background: transparent; }
+    /* Filename / lang tab on code blocks */
+    .md-content pre { position: relative; }
+    .md-content pre::before {
+      content: attr(data-lang); position: absolute; top: 0; right: 0;
+      font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #7d8590;
+      background: #161b22; padding: 3px 10px; border-radius: 0 9px 0 8px;
+      letter-spacing: .04em; text-transform: uppercase;
+    }
+    .md-content blockquote { border-left: 3px solid var(--primary); padding: .4em 1em; margin: 1em 0; color: var(--text-secondary); background: var(--primary-light); border-radius: 0 6px 6px 0; }
+    .md-content ul, .md-content ol { padding-left: 1.5em; margin: .8em 0; }
+    .md-content li { margin: .35em 0; color: var(--text); }
+    .md-content a { color: var(--primary); text-decoration: none; }
+    .md-content a:hover { text-decoration: underline; }
+    .md-content strong { font-weight: 700; color: var(--text); }
+    .md-content table { width: 100%; border-collapse: collapse; margin: 1em 0; font-size: .9em; }
+    .md-content th, .md-content td { border: 1px solid var(--border); padding: 8px 12px; }
+    .md-content th { background: var(--bg-secondary); font-weight: 600; }
+    .md-content hr { border: none; border-top: 1px solid var(--border); margin: 1.5em 0; }
+
+    /* ── Animations ── */
+    @keyframes chipfloat {
+      from { transform: translateY(0)   rotate(-1.5deg); opacity: .85; }
+      to   { transform: translateY(-9px) rotate(1.5deg);  opacity: 1;   }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    #root > div { animation: fadeUp .2s ease; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2.5px solid var(--border); border-top-color: var(--primary);
+      animation: spin .7s linear infinite;
+    }
+
+    /* ── Responsive layout primitives ── */
+    .page-container {
+      max-width: 1200px; margin: 0 auto; padding: 32px 24px 60px;
+    }
+    .cards-grid {
+      display: grid; gap: 20px;
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .detail-grid {
+      display: grid; gap: 44px;
+      grid-template-columns: 1fr 256px;
+    }
+
+    /* Tablet */
+    @media (max-width: 1024px) {
+      .cards-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    /* Detail collapses sidebar below 900 */
+    @media (max-width: 899px) {
+      .detail-grid { grid-template-columns: 1fr; gap: 0; }
+      .detail-sidebar { display: none; }
+    }
+    /* Mobile */
+    @media (max-width: 767px) {
+      .page-container { padding: 20px 16px 48px; }
+      .cards-grid { grid-template-columns: 1fr; gap: 14px; }
+      .md-content pre { padding: 16px 14px; font-size: .95em; }
+      .md-content h1 { font-size: 1.45em; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React + Babel -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <!-- Marked.js for Markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@11/marked.min.js"></script>
+
+  <!-- highlight.js -->
+  <script src="https://unpkg.com/@highlightjs/cdn-assets@11.9.0/highlight.min.js"></script>
+
+  <!-- Configure marked to add language data-attr + hljs classes -->
+  <script>
+    if (window.marked && window.hljs) {
+      const renderer = new marked.Renderer();
+      renderer.code = function (code, lang) {
+        const valid = lang && hljs.getLanguage(lang);
+        const label = lang || 'text';
+        const highlighted = valid
+          ? hljs.highlight(code, { language: lang }).value
+          : hljs.highlightAuto(code).value;
+        return `<pre data-lang="${label}"><code class="hljs language-${label}">${highlighted}</code></pre>`;
+      };
+      marked.setOptions({ renderer });
+    }
+  </script>
+
+  <!-- Data (plain JS — no JSX) -->
+  <script src="data.js"></script>
+
+  <!-- Components (load order matters: shared → layout → screens → app) -->
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="ui.jsx"></script>
+  <script type="text/babel" src="Header.jsx"></script>
+  <script type="text/babel" src="screens.jsx"></script>
+  <script type="text/babel" src="app.jsx"></script>
+</body>
+</html>
