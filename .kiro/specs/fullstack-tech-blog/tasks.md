@@ -144,7 +144,7 @@
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
   - _Boundary: Frontend / Page_
 
-- [ ] 6.3 (P) ブログ詳細ページを実装する
+- [x] 6.3 (P) ブログ詳細ページを実装する
   - `frontend/src/pages/BlogDetailPage.tsx` を実装する
   - `react-markdown`（remark-gfm + rehype-highlight）でマークダウン本文をレンダリングする
   - 著者アバター・名前・日時・readTime を含むメタバーを実装する
