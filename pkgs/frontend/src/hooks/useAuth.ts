@@ -27,7 +27,7 @@ export function useAuth(): UseAuthReturn {
           const payload = session.tokens.idToken.payload;
           setUser({
             sub: currentUser.userId,
-            email: payload['email'] as string,
+            email: payload.email as string,
           });
         }
       } catch {
@@ -47,7 +47,7 @@ export function useAuth(): UseAuthReturn {
       const payload = session.tokens?.idToken?.payload;
       setUser({
         sub: currentUser.userId,
-        email: payload?.['email'] as string,
+        email: payload?.email as string,
       });
     }
   };

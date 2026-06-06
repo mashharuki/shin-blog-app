@@ -102,7 +102,7 @@
   - _Boundary: Frontend / Client_
 
 - [ ] 5. Core - UI コンポーネント実装
-- [ ] 5.1 (P) タグカラーマッピングと BlogPostCard コンポーネントを実装する
+- [x] 5.1 (P) タグカラーマッピングと BlogPostCard コンポーネントを実装する
   - `frontend/src/lib/tagColors.ts` にタグ名→カラーコードの定数マップ（AWS・TypeScript・React 等）を定義する
   - `frontend/src/components/blog/BlogPostCard.tsx` を実装する（著者アバター・タイトル2行クランプ・抜粋3行クランプ・タグ Badges 最大3件・readTime・いいね表示）
   - readTime をクライアントサイドで `Math.ceil(content.split(' ').length / 200)` で計算する
