@@ -122,7 +122,7 @@
   - _Requirements: 5.1, 5.2_
   - _Boundary: Frontend / Blog_
 
-- [ ] 6. Core - フロントエンドページ実装
+- [x] 6. Core - フロントエンドページ実装
 - [x] 6.1 (P) ログインページを実装する
   - `frontend/src/pages/LoginPage.tsx` を実装する
   - デスクトップ：左カラムにグラデーション背景＋技術チップアニメーション（TypeScript・AWS 等）・右カラムにログインフォームの2カラムレイアウトを実装する
@@ -165,7 +165,7 @@
   - _Boundary: Frontend / Page_
 
 - [ ] 7. Integration - アプリケーション統合とルーティング
-- [ ] 7.1 NavBar/Header・App ルーティング・ProtectedRoute を統合する
+- [x] 7.1 NavBar/Header・App ルーティング・ProtectedRoute を統合する
   - `frontend/src/components/layout/NavBar.tsx` を実装する（ロゴ・ナビ・検索バー・ダークモード切替・「投稿する」ボタン・アバタードロップダウン・モバイルハンバーガーメニュー）
   - `frontend/src/components/auth/ProtectedRoute.tsx` を実装する（`isLoading` 中はスピナー表示・未認証は `<Navigate replace to="/login" />`）
   - `frontend/src/App.tsx` で react-router-dom のルート定義（`/login`・`/`・`/posts/:id`・`/create`）を実装する
