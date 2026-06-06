@@ -44,7 +44,9 @@ export function NavBar({ darkMode, onDarkModeToggle }: NavBarProps) {
         zIndex: 50,
         backdropFilter: "blur(14px)",
         WebkitBackdropFilter: "blur(14px)",
-        background: darkMode ? "rgba(15, 23, 42, 0.85)" : "rgba(255, 255, 255, 0.85)",
+        background: darkMode
+          ? "rgba(15, 23, 42, 0.85)"
+          : "rgba(255, 255, 255, 0.85)",
         borderBottom: darkMode ? "1px solid #1e293b" : "1px solid #e2e8f0",
         fontFamily: "system-ui, sans-serif",
       }}
@@ -209,7 +211,14 @@ export function NavBar({ darkMode, onDarkModeToggle }: NavBarProps) {
                 >
                   {avatarInitial}
                 </span>
-                <span style={{ fontSize: 10, color: darkMode ? "#94a3b8" : "#64748b" }}>▼</span>
+                <span
+                  style={{
+                    fontSize: 10,
+                    color: darkMode ? "#94a3b8" : "#64748b",
+                  }}
+                >
+                  ▼
+                </span>
               </button>
 
               {avatarDropdownOpen && (
@@ -220,7 +229,9 @@ export function NavBar({ darkMode, onDarkModeToggle }: NavBarProps) {
                     top: "calc(100% + 8px)",
                     right: 0,
                     background: darkMode ? "#1e293b" : "#fff",
-                    border: darkMode ? "1px solid #334155" : "1px solid #e2e8f0",
+                    border: darkMode
+                      ? "1px solid #334155"
+                      : "1px solid #e2e8f0",
                     borderRadius: 10,
                     boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
                     minWidth: 200,
@@ -232,7 +243,9 @@ export function NavBar({ darkMode, onDarkModeToggle }: NavBarProps) {
                   <div
                     style={{
                       padding: "8px 16px 12px",
-                      borderBottom: darkMode ? "1px solid #334155" : "1px solid #f1f5f9",
+                      borderBottom: darkMode
+                        ? "1px solid #334155"
+                        : "1px solid #f1f5f9",
                     }}
                   >
                     <div
@@ -327,12 +340,21 @@ export function NavBar({ darkMode, onDarkModeToggle }: NavBarProps) {
           data-testid="mobile-menu"
           style={{
             borderTop: darkMode ? "1px solid #1e293b" : "1px solid #e2e8f0",
-            background: darkMode ? "rgba(15, 23, 42, 0.97)" : "rgba(255, 255, 255, 0.97)",
+            background: darkMode
+              ? "rgba(15, 23, 42, 0.97)"
+              : "rgba(255, 255, 255, 0.97)",
             padding: "12px 16px 16px",
           }}
         >
           {/* Nav links */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 12 }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 4,
+              marginBottom: 12,
+            }}
+          >
             <Link
               to="/"
               onClick={() => setMobileMenuOpen(false)}

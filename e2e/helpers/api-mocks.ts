@@ -82,7 +82,7 @@ export async function mockApiRoutes(
         tags?: string[];
       };
       const newPost: MockPost = {
-        postId: "post-e2e-new-" + Date.now(),
+        postId: `post-e2e-new-${Date.now()}`,
         title: body.title ?? createdPost.title,
         content: body.content ?? createdPost.content,
         authorName: createdPost.authorName,

@@ -1,9 +1,9 @@
-import { Hono } from "hono";
-import { cors } from "hono/cors";
-import { handle } from "hono/aws-lambda";
 import { serve } from "@hono/node-server";
-import type { HonoEnv } from "./types.js";
+import { Hono } from "hono";
+import { handle } from "hono/aws-lambda";
+import { cors } from "hono/cors";
 import { postsRouter } from "./routes/posts.js";
+import type { HonoEnv } from "./types.js";
 
 const app = new Hono<HonoEnv>();
 

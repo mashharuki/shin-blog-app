@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeHighlight from "rehype-highlight";
 import type { Post, PostSummary } from "@shin-blog-app/shared";
+import { useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import { useNavigate, useParams } from "react-router-dom";
+import rehypeHighlight from "rehype-highlight";
+import remarkGfm from "remark-gfm";
 import { api } from "../lib/api.js";
 import { getTagColor } from "../lib/tagColors.js";
 
@@ -19,8 +19,8 @@ interface TocHeading {
 function extractHeadings(content: string): TocHeading[] {
   const regex = /^(#{1,3})\s+(.+)$/gm;
   const headings: TocHeading[] = [];
-  let match: RegExpExecArray | null;
-  while ((match = regex.exec(content)) !== null) {
+  let match = regex.exec(content);
+  while (match !== null) {
     const level = match[1].length;
     const text = match[2].trim();
     const id = text
@@ -28,6 +28,7 @@ function extractHeadings(content: string): TocHeading[] {
       .replace(/[^\w\s-]/g, "")
       .replace(/\s+/g, "-");
     headings.push({ level, text, id });
+    match = regex.exec(content);
   }
   return headings;
 }
@@ -293,8 +294,7 @@ export function BlogDetailPage() {
   // Related posts: same tags, exclude current post, top 3
   const relatedPosts = allPosts
     .filter(
-      (p) =>
-        p.postId !== postId && p.tags.some((t) => post.tags.includes(t)),
+      (p) => p.postId !== postId && p.tags.some((t) => post.tags.includes(t)),
     )
     .slice(0, 3);
 
@@ -395,7 +395,9 @@ export function BlogDetailPage() {
                   flexWrap: "wrap",
                 }}
               >
-                <span data-testid="post-date">{formatDate(post.createdAt)}</span>
+                <span data-testid="post-date">
+                  {formatDate(post.createdAt)}
+                </span>
                 <span data-testid="read-time">⏱ {readTime}分で読めます</span>
               </div>
             </div>

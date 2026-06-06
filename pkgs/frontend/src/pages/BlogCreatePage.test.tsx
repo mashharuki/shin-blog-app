@@ -1,7 +1,7 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { MemoryRouter } from "react-router-dom";
 import type { Post } from "@shin-blog-app/shared";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // ── Hoisted mocks ────────────────────────────────────────────────
 const { mockCreatePost, mockNavigate } = vi.hoisted(() => ({
@@ -38,9 +38,10 @@ vi.mock("../components/blog/MarkdownEditor.js", () => ({
 
 // Mock react-router-dom
 vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual<typeof import("react-router-dom")>(
-    "react-router-dom",
-  );
+  const actual =
+    await vi.importActual<typeof import("react-router-dom")>(
+      "react-router-dom",
+    );
   return {
     ...actual,
     useNavigate: () => mockNavigate,
@@ -131,7 +132,9 @@ describe("BlogCreatePage", () => {
       fireEvent.keyDown(tagInput, { key: "Enter" });
       expect(screen.getByTestId("tag-chip-TypeScript")).toBeInTheDocument();
       fireEvent.click(screen.getByTestId("tag-remove-TypeScript"));
-      expect(screen.queryByTestId("tag-chip-TypeScript")).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("tag-chip-TypeScript"),
+      ).not.toBeInTheDocument();
     });
 
     it("タグ追加後に入力欄がクリアされる", () => {

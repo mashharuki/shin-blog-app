@@ -1,7 +1,7 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { MemoryRouter } from "react-router-dom";
 import type { PostSummary } from "@shin-blog-app/shared";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Use vi.hoisted so these mocks are available inside the vi.mock factory
 const { mockGetPosts, mockNavigate } = vi.hoisted(() => ({
@@ -18,9 +18,10 @@ vi.mock("../lib/api.js", () => ({
 
 // Mock useNavigate
 vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual<typeof import("react-router-dom")>(
-    "react-router-dom",
-  );
+  const actual =
+    await vi.importActual<typeof import("react-router-dom")>(
+      "react-router-dom",
+    );
   return {
     ...actual,
     useNavigate: () => mockNavigate,
@@ -84,7 +85,10 @@ describe("TopPage", () => {
     });
 
     it("page-grid data-testid が存在する", async () => {
-      mockGetPosts.mockResolvedValue({ posts: makePosts(1), nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: makePosts(1),
+        nextCursor: undefined,
+      });
       renderTopPage();
       await waitFor(() => {
         expect(screen.getByTestId("post-grid")).toBeInTheDocument();
@@ -107,7 +111,10 @@ describe("TopPage", () => {
     });
 
     it("トレンドタブに切り替えられる", async () => {
-      mockGetPosts.mockResolvedValue({ posts: makePosts(2), nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: makePosts(2),
+        nextCursor: undefined,
+      });
       renderTopPage();
       await waitFor(() => screen.getByTestId("tab-trending"));
       fireEvent.click(screen.getByTestId("tab-trending"));
@@ -198,7 +205,10 @@ describe("TopPage", () => {
     });
 
     it("検索クエリ有のときクリアボタンが表示される", async () => {
-      mockGetPosts.mockResolvedValue({ posts: makePosts(1), nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: makePosts(1),
+        nextCursor: undefined,
+      });
       renderTopPage();
       await waitFor(() => screen.getByTestId("search-input"));
       fireEvent.change(screen.getByTestId("search-input"), {

@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock aws-amplify/auth before importing the hook
 vi.mock("aws-amplify/auth", () => ({
@@ -14,10 +14,10 @@ vi.mock("../lib/amplify.js", () => ({}));
 
 // Import mocks after vi.mock declarations
 import {
-  signIn as mockSignIn,
-  signOut as mockSignOut,
   fetchAuthSession as mockFetchAuthSession,
   getCurrentUser as mockGetCurrentUser,
+  signIn as mockSignIn,
+  signOut as mockSignOut,
 } from "aws-amplify/auth";
 import { useAuth } from "./useAuth.js";
 

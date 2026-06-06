@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { NavBar } from "./components/layout/NavBar.js";
+import { useEffect, useState } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute.js";
+import { NavBar } from "./components/layout/NavBar.js";
+import { BlogCreatePage } from "./pages/BlogCreatePage.js";
+import { BlogDetailPage } from "./pages/BlogDetailPage.js";
 import { LoginPage } from "./pages/LoginPage.js";
 import { TopPage } from "./pages/TopPage.js";
-import { BlogDetailPage } from "./pages/BlogDetailPage.js";
-import { BlogCreatePage } from "./pages/BlogCreatePage.js";
 
 function App() {
   const [darkMode, setDarkMode] = useState<boolean>(() => {

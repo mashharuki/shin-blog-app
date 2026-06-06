@@ -1,7 +1,7 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { BlogPostCard } from "./BlogPostCard.js";
 import type { PostSummary } from "@shin-blog-app/shared";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { BlogPostCard } from "./BlogPostCard.js";
 
 const mockPost: PostSummary = {
   postId: "post-1",

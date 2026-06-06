@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import type { PostSummary } from "@shin-blog-app/shared";
-import { api } from "../lib/api.js";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { BlogPostCard } from "../components/blog/BlogPostCard.js";
+import { api } from "../lib/api.js";
 
 type Tab = "latest" | "trending";
 
@@ -29,9 +29,7 @@ export function TopPage() {
     setIsLoading(true);
     try {
       const result = await api.getPosts(cursor);
-      setPosts((prev) =>
-        cursor ? [...prev, ...result.posts] : result.posts,
-      );
+      setPosts((prev) => (cursor ? [...prev, ...result.posts] : result.posts));
       setNextCursor(result.nextCursor);
       nextCursorRef.current = result.nextCursor;
     } finally {
@@ -92,9 +90,7 @@ export function TopPage() {
         return 0;
       }
       // latest: createdAt DESC
-      return (
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
   // ── Handlers ─────────────────────────────────────────────────
@@ -168,9 +164,7 @@ export function TopPage() {
       </div>
 
       {/* Search bar */}
-      <div
-        style={{ position: "relative", marginBottom: 20, maxWidth: 480 }}
-      >
+      <div style={{ position: "relative", marginBottom: 20, maxWidth: 480 }}>
         <input
           data-testid="search-input"
           type="text"
@@ -215,7 +209,12 @@ export function TopPage() {
       {allTags.length > 0 && (
         <div
           data-testid="tag-chips"
-          style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24 }}
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 8,
+            marginBottom: 24,
+          }}
         >
           {allTags.map((tag) => (
             <button
@@ -226,7 +225,10 @@ export function TopPage() {
               style={{
                 padding: "4px 14px",
                 borderRadius: 9999,
-                border: selectedTag === tag ? "2px solid #6366f1" : "1px solid #e2e8f0",
+                border:
+                  selectedTag === tag
+                    ? "2px solid #6366f1"
+                    : "1px solid #e2e8f0",
                 background: selectedTag === tag ? "#eef2ff" : "#f8fafc",
                 color: selectedTag === tag ? "#4f46e5" : "#475569",
                 fontWeight: selectedTag === tag ? 700 : 500,

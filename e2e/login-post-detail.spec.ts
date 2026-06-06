@@ -1,6 +1,6 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
+import { type MockPost, mockApiRoutes } from "./helpers/api-mocks.js";
 import { mockCognitoRoutes } from "./helpers/auth.js";
-import { mockApiRoutes, type MockPost } from "./helpers/api-mocks.js";
 
 /**
  * テスト1: ログイン→投稿→詳細確認
@@ -150,7 +150,9 @@ test.describe("ログイン → 投稿 → 詳細確認", () => {
   }) => {
     // Mock Cognito to return auth failure
     await page.route(
-      (url) => url.hostname.includes("cognito-idp") || url.hostname.includes("amazonaws.com"),
+      (url) =>
+        url.hostname.includes("cognito-idp") ||
+        url.hostname.includes("amazonaws.com"),
       async (route) => {
         await route.fulfill({
           status: 400,
@@ -171,6 +173,8 @@ test.describe("ログイン → 投稿 → 詳細確認", () => {
     // Should stay on login page
     await expect(page).toHaveURL(/.*\/login/);
     // Auth error message should appear
-    await expect(page.getByTestId("auth-error")).toBeVisible({ timeout: 5_000 });
+    await expect(page.getByTestId("auth-error")).toBeVisible({
+      timeout: 5_000,
+    });
   });
 });

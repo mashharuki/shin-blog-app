@@ -1,7 +1,7 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { MemoryRouter } from "react-router-dom";
 import type { Post, PostSummary } from "@shin-blog-app/shared";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Use vi.hoisted so these mocks are available inside the vi.mock factory
 const { mockGetPost, mockGetPosts, mockNavigate } = vi.hoisted(() => ({
@@ -20,9 +20,10 @@ vi.mock("../lib/api.js", () => ({
 
 // Mock react-router-dom
 vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual<typeof import("react-router-dom")>(
-    "react-router-dom",
-  );
+  const actual =
+    await vi.importActual<typeof import("react-router-dom")>(
+      "react-router-dom",
+    );
   return {
     ...actual,
     useParams: () => ({ postId: "test-post-id" }),
@@ -93,7 +94,10 @@ describe("BlogDetailPage", () => {
   describe("Requirement 4.1 – 記事詳細表示", () => {
     it("記事タイトルが表示される", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => {
         expect(screen.getByTestId("post-title")).toHaveTextContent(
@@ -104,7 +108,10 @@ describe("BlogDetailPage", () => {
 
     it("著者名が表示される", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => {
         expect(screen.getByTestId("author-name")).toHaveTextContent(
@@ -115,7 +122,10 @@ describe("BlogDetailPage", () => {
 
     it("著者アバターが表示される", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => {
         expect(screen.getByTestId("author-avatar")).toBeInTheDocument();
@@ -124,7 +134,10 @@ describe("BlogDetailPage", () => {
 
     it("投稿日時が表示される", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => {
         expect(screen.getByTestId("post-date")).toBeInTheDocument();
@@ -133,7 +146,10 @@ describe("BlogDetailPage", () => {
 
     it("readTime が表示される", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => {
         expect(screen.getByTestId("read-time")).toBeInTheDocument();
@@ -142,7 +158,10 @@ describe("BlogDetailPage", () => {
 
     it("Markdown コンテンツがレンダリングされる (post-content 領域が存在)", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => {
         expect(screen.getByTestId("post-content")).toBeInTheDocument();
@@ -151,7 +170,10 @@ describe("BlogDetailPage", () => {
 
     it("タグが表示される", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => {
         expect(screen.getByTestId("post-tags")).toBeInTheDocument();
@@ -160,7 +182,10 @@ describe("BlogDetailPage", () => {
 
     it("タグの内容が正しく表示される", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => {
         const tagsEl = screen.getByTestId("post-tags");
@@ -209,7 +234,10 @@ describe("BlogDetailPage", () => {
   describe("Requirement 4.3 – 一覧に戻るナビゲーション", () => {
     it("「一覧に戻る」ボタンが表示される", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => {
         expect(screen.getByTestId("back-button")).toBeInTheDocument();
@@ -218,7 +246,10 @@ describe("BlogDetailPage", () => {
 
     it("「一覧に戻る」クリックで navigate(-1) が呼ばれる", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => screen.getByTestId("back-button"));
       fireEvent.click(screen.getByTestId("back-button"));
@@ -232,7 +263,10 @@ describe("BlogDetailPage", () => {
   describe("Requirement 4.4 – 未認証でも閲覧可", () => {
     it("api.getPost が postId を引数に呼ばれる (認証ヘッダー不要)", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => {
         expect(mockGetPost).toHaveBeenCalledWith("test-post-id");
@@ -241,7 +275,10 @@ describe("BlogDetailPage", () => {
 
     it("api.getPost は1引数（postId のみ）で呼ばれる", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => {
         expect(mockGetPost).toHaveBeenCalledTimes(1);
@@ -256,7 +293,10 @@ describe("BlogDetailPage", () => {
   describe("目次 (TOC)", () => {
     it("TOC 要素が表示される", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => {
         expect(screen.getByTestId("toc")).toBeInTheDocument();
@@ -265,7 +305,10 @@ describe("BlogDetailPage", () => {
 
     it("モバイル用アコーディオントグルボタンが存在する", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => {
         expect(screen.getByTestId("toc-toggle")).toBeInTheDocument();
@@ -274,7 +317,10 @@ describe("BlogDetailPage", () => {
 
     it("トグルボタンクリックでアコーディオンが開閉する", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => screen.getByTestId("toc-toggle"));
       const toggle = screen.getByTestId("toc-toggle");
@@ -291,7 +337,10 @@ describe("BlogDetailPage", () => {
         content: "Just a paragraph with no headings.",
       };
       mockGetPost.mockResolvedValue(postNoHeadings);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => screen.getByTestId("post-content"));
       expect(screen.queryByTestId("toc")).not.toBeInTheDocument();
@@ -304,7 +353,10 @@ describe("BlogDetailPage", () => {
   describe("関連記事", () => {
     it("同じタグを持つ記事が関連記事セクションとして表示される", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => {
         expect(screen.getByTestId("related-posts")).toBeInTheDocument();
@@ -312,18 +364,15 @@ describe("BlogDetailPage", () => {
     });
 
     it("関連記事は最大 3 件まで表示される", async () => {
-      const manyRelated: PostSummary[] = Array.from(
-        { length: 5 },
-        (_, i) => ({
-          postId: `related-${i}`,
-          title: `Related ${i}`,
-          authorEmail: `auth${i}@example.com`,
-          authorName: `Author ${i}`,
-          tags: ["TypeScript"],
-          createdAt: `2026-01-${String(10 - i).padStart(2, "0")}T00:00:00.000Z`,
-          excerpt: "excerpt",
-        }),
-      );
+      const manyRelated: PostSummary[] = Array.from({ length: 5 }, (_, i) => ({
+        postId: `related-${i}`,
+        title: `Related ${i}`,
+        authorEmail: `auth${i}@example.com`,
+        authorName: `Author ${i}`,
+        tags: ["TypeScript"],
+        createdAt: `2026-01-${String(10 - i).padStart(2, "0")}T00:00:00.000Z`,
+        excerpt: "excerpt",
+      }));
       mockGetPost.mockResolvedValue(mockPost);
       mockGetPosts.mockResolvedValue({
         posts: manyRelated,
@@ -399,7 +448,10 @@ describe("BlogDetailPage", () => {
   describe("いいね・保存・シェアボタン", () => {
     it("いいねボタンが表示される", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => {
         expect(screen.getByTestId("like-button")).toBeInTheDocument();
@@ -408,7 +460,10 @@ describe("BlogDetailPage", () => {
 
     it("いいねボタンクリックで aria-pressed が切り替わる", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => screen.getByTestId("like-button"));
       const btn = screen.getByTestId("like-button");
@@ -419,7 +474,10 @@ describe("BlogDetailPage", () => {
 
     it("保存ボタンが表示される", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => {
         expect(screen.getByTestId("save-button")).toBeInTheDocument();
@@ -428,7 +486,10 @@ describe("BlogDetailPage", () => {
 
     it("シェアボタンが表示される", async () => {
       mockGetPost.mockResolvedValue(mockPost);
-      mockGetPosts.mockResolvedValue({ posts: mockPosts, nextCursor: undefined });
+      mockGetPosts.mockResolvedValue({
+        posts: mockPosts,
+        nextCursor: undefined,
+      });
       renderBlogDetailPage();
       await waitFor(() => {
         expect(screen.getByTestId("share-button")).toBeInTheDocument();

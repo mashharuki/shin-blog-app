@@ -1,8 +1,8 @@
+import { createPostSchema } from "@shin-blog-app/shared";
 import { Hono } from "hono";
-import type { HonoEnv } from "../types.js";
 import { cognitoAuthMiddleware } from "../middleware/auth.js";
 import { DynamoDBPostRepository } from "../repositories/post.repository.js";
-import { createPostSchema } from "@shin-blog-app/shared";
+import type { HonoEnv } from "../types.js";
 
 const postsRouter = new Hono<HonoEnv>();
 const repository = new DynamoDBPostRepository();

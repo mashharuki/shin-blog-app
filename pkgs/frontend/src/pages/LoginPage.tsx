@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 
@@ -53,9 +53,7 @@ export function LoginPage() {
     } catch (err: unknown) {
       const error = err as Error;
       if (error.name === "NotAuthorizedException") {
-        setAuthError(
-          "メールアドレスまたはパスワードが正しくありません。",
-        );
+        setAuthError("メールアドレスまたはパスワードが正しくありません。");
       } else {
         setAuthError(
           error.message ?? "ログインに失敗しました。もう一度お試しください。",

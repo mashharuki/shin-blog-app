@@ -1,8 +1,8 @@
+import { createPostSchema } from "@shin-blog-app/shared";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createPostSchema } from "@shin-blog-app/shared";
-import { api } from "../lib/api.js";
 import { MarkdownEditor } from "../components/blog/MarkdownEditor.js";
+import { api } from "../lib/api.js";
 
 interface FieldErrors {
   title?: string;
@@ -71,9 +71,7 @@ export function BlogCreatePage() {
       const post = await api.createPost(result.data);
       navigate(`/posts/${post.postId}`);
     } catch (err) {
-      setSubmitError(
-        err instanceof Error ? err.message : "投稿に失敗しました",
-      );
+      setSubmitError(err instanceof Error ? err.message : "投稿に失敗しました");
     } finally {
       setIsSubmitting(false);
     }

@@ -202,7 +202,7 @@ export async function mockCognitoRoutes(
   );
 
   // Also mock the Amplify v6 token-refresh endpoint pattern
-  await page.route(`**/oauth2/token`, async (route) => {
+  await page.route("**/oauth2/token", async (route) => {
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -221,7 +221,11 @@ export async function mockCognitoRoutes(
 
   // Override Amplify's getCurrentUser to return mock data
   await page.addInitScript(
-    ({ sub, email, clientId }: { sub: string; email: string; clientId: string }) => {
+    ({
+      sub,
+      email,
+      clientId,
+    }: { sub: string; email: string; clientId: string }) => {
       // Store mock user info so the app can read it
       const prefix = `CognitoIdentityServiceProvider.${clientId}`;
       // Ensure LastAuthUser is set (belt-and-suspenders with injectAuthState)

@@ -5,8 +5,8 @@ import {
   PutCommand,
   QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
-import { v4 as uuidv4 } from "uuid";
 import type { CreatePostInput, Post, PostSummary } from "@shin-blog-app/shared";
+import { v4 as uuidv4 } from "uuid";
 
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
@@ -46,13 +46,13 @@ export class DynamoDBPostRepository implements PostRepository {
     );
 
     const posts: PostSummary[] = (result.Items ?? []).map((item) => ({
-      postId: item["postId"] as string,
-      title: item["title"] as string,
-      authorEmail: item["authorEmail"] as string,
-      authorName: item["authorName"] as string,
-      tags: (item["tags"] as string[] | undefined) ?? [],
-      createdAt: item["createdAt"] as string,
-      excerpt: (item["content"] as string).slice(0, 200),
+      postId: item.postId as string,
+      title: item.title as string,
+      authorEmail: item.authorEmail as string,
+      authorName: item.authorName as string,
+      tags: (item.tags as string[] | undefined) ?? [],
+      createdAt: item.createdAt as string,
+      excerpt: (item.content as string).slice(0, 200),
     }));
 
     const nextCursor = result.LastEvaluatedKey
@@ -74,14 +74,14 @@ export class DynamoDBPostRepository implements PostRepository {
 
     const item = result.Item;
     return {
-      postId: item["postId"] as string,
-      title: item["title"] as string,
-      content: item["content"] as string,
-      authorId: item["authorId"] as string,
-      authorEmail: item["authorEmail"] as string,
-      authorName: item["authorName"] as string,
-      tags: (item["tags"] as string[] | undefined) ?? [],
-      createdAt: item["createdAt"] as string,
+      postId: item.postId as string,
+      title: item.title as string,
+      content: item.content as string,
+      authorId: item.authorId as string,
+      authorEmail: item.authorEmail as string,
+      authorName: item.authorName as string,
+      tags: (item.tags as string[] | undefined) ?? [],
+      createdAt: item.createdAt as string,
     };
   }
 

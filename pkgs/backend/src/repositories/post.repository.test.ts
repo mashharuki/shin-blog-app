@@ -87,8 +87,9 @@ describe("DynamoDBPostRepository", () => {
       const result = await repo.listPosts();
 
       expect(result.nextCursor).toBeDefined();
+      const cursor = result.nextCursor ?? "";
       const decoded = JSON.parse(
-        Buffer.from(result.nextCursor!, "base64").toString("utf-8"),
+        Buffer.from(cursor, "base64").toString("utf-8"),
       );
       expect(decoded).toEqual(lastKey);
     });
@@ -141,11 +142,11 @@ describe("DynamoDBPostRepository", () => {
       const post = await repo.getPost("post-1");
 
       expect(post).not.toBeNull();
-      expect(post!.postId).toBe("post-1");
-      expect(post!.title).toBe("My Post");
-      expect(post!.content).toBe("Content here");
-      expect(post!.authorName).toBe("carol");
-      expect(post!.tags).toEqual(["AWS"]);
+      expect(post?.postId).toBe("post-1");
+      expect(post?.title).toBe("My Post");
+      expect(post?.content).toBe("Content here");
+      expect(post?.authorName).toBe("carol");
+      expect(post?.tags).toEqual(["AWS"]);
     });
 
     it("returns null when the item does not exist", async () => {

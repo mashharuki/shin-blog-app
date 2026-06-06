@@ -1,4 +1,4 @@
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock fetch globally
 global.fetch = vi.fn();
@@ -117,7 +117,7 @@ describe("api client", () => {
       expect(url).toBe("http://localhost:3000/api/posts");
       expect((init as RequestInit).method).toBe("POST");
       const headers = (init as RequestInit).headers as Record<string, string>;
-      expect(headers["Authorization"]).toBe("Bearer test-id-token");
+      expect(headers.Authorization).toBe("Bearer test-id-token");
       expect(headers["Content-Type"]).toBe("application/json");
     });
 

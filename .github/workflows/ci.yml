@@ -1,0 +1,192 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ─────────────────────────────────────────────
+  # Lint: Biome check (format + lint)
+  # ─────────────────────────────────────────────
+  lint:
+    name: Lint (Biome)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: "10"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Biome check (no auto-fix)
+        run: npx biome check .
+
+  # ─────────────────────────────────────────────
+  # Test: Shared package (types + schemas)
+  # ─────────────────────────────────────────────
+  test-shared:
+    name: Test / Shared
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: "10"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run shared tests
+        run: pnpm shared test
+
+  # ─────────────────────────────────────────────
+  # Test: Backend (Hono + DynamoDB mocks)
+  # ─────────────────────────────────────────────
+  test-backend:
+    name: Test / Backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: "10"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run backend tests
+        run: pnpm backend test
+
+      - name: Build backend (TypeScript)
+        run: pnpm backend build
+
+  # ─────────────────────────────────────────────
+  # Test: Frontend (React + Vitest) + Vite build
+  # ─────────────────────────────────────────────
+  test-frontend:
+    name: Test / Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: "10"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run frontend tests
+        run: pnpm frontend test
+
+      - name: Build frontend (Vite)
+        run: pnpm frontend build
+        env:
+          VITE_API_BASE_URL: http://localhost:3000
+          VITE_COGNITO_USER_POOL_ID: us-east-1_placeholder
+          VITE_COGNITO_CLIENT_ID: placeholder
+          VITE_COGNITO_REGION: us-east-1
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: pkgs/frontend/dist/
+          retention-days: 7
+
+  # ─────────────────────────────────────────────
+  # Test: CDK (Jest + TypeScript synth)
+  # ─────────────────────────────────────────────
+  test-cdk:
+    name: Test / CDK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: "10"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run CDK tests
+        run: pnpm cdk test
+
+      - name: Build CDK (TypeScript)
+        run: pnpm cdk build
+
+  # ─────────────────────────────────────────────
+  # E2E: Playwright (runs against Vite dev server)
+  # Runs only after all unit tests pass
+  # ─────────────────────────────────────────────
+  e2e:
+    name: E2E Tests (Playwright)
+    runs-on: ubuntu-latest
+    needs: [test-shared, test-backend, test-frontend, test-cdk]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: "10"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        run: pnpm e2e
+        env:
+          CI: "true"
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14

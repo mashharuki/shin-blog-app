@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import type { AuthUser } from "@shin-blog-app/shared";
 import {
   signIn as amplifySignIn,
   signOut as amplifySignOut,
   fetchAuthSession,
   getCurrentUser,
 } from "aws-amplify/auth";
-import type { AuthUser } from "@shin-blog-app/shared";
+import { useEffect, useState } from "react";
 
 interface UseAuthReturn {
   user: AuthUser | null;

@@ -1,5 +1,5 @@
-import { fetchAuthSession } from "aws-amplify/auth";
 import type { CreatePostInput, Post, PostSummary } from "@shin-blog-app/shared";
+import { fetchAuthSession } from "aws-amplify/auth";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000";
 

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Prevent actual Amplify.configure from running
 vi.mock("../../lib/amplify.js", () => ({}));
@@ -20,7 +20,10 @@ function renderWithRouter(
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
-        <Route path="/login" element={<div data-testid="login-page">ログインページ</div>} />
+        <Route
+          path="/login"
+          element={<div data-testid="login-page">ログインページ</div>}
+        />
         <Route path="/create" element={ui} />
       </Routes>
     </MemoryRouter>,
@@ -34,7 +37,12 @@ describe("ProtectedRoute", () => {
 
   describe("ローディング状態 (Requirement 1.4)", () => {
     it("isLoading が true のときローディングスピナーを表示する", () => {
-      mockUseAuth.mockReturnValue({ user: null, isLoading: true, signIn: vi.fn(), signOut: vi.fn() });
+      mockUseAuth.mockReturnValue({
+        user: null,
+        isLoading: true,
+        signIn: vi.fn(),
+        signOut: vi.fn(),
+      });
       renderWithRouter(
         <ProtectedRoute>
           <div data-testid="protected-content">保護されたコンテンツ</div>
@@ -44,7 +52,12 @@ describe("ProtectedRoute", () => {
     });
 
     it("isLoading が true のとき子コンポーネントを表示しない", () => {
-      mockUseAuth.mockReturnValue({ user: null, isLoading: true, signIn: vi.fn(), signOut: vi.fn() });
+      mockUseAuth.mockReturnValue({
+        user: null,
+        isLoading: true,
+        signIn: vi.fn(),
+        signOut: vi.fn(),
+      });
       renderWithRouter(
         <ProtectedRoute>
           <div data-testid="protected-content">保護されたコンテンツ</div>
@@ -54,7 +67,12 @@ describe("ProtectedRoute", () => {
     });
 
     it("isLoading が true のときログインページにリダイレクトしない", () => {
-      mockUseAuth.mockReturnValue({ user: null, isLoading: true, signIn: vi.fn(), signOut: vi.fn() });
+      mockUseAuth.mockReturnValue({
+        user: null,
+        isLoading: true,
+        signIn: vi.fn(),
+        signOut: vi.fn(),
+      });
       renderWithRouter(
         <ProtectedRoute>
           <div data-testid="protected-content">保護されたコンテンツ</div>
@@ -66,7 +84,12 @@ describe("ProtectedRoute", () => {
 
   describe("未認証リダイレクト (Requirement 1.4, 5.5)", () => {
     it("ユーザーが null のとき /login へリダイレクトする", () => {
-      mockUseAuth.mockReturnValue({ user: null, isLoading: false, signIn: vi.fn(), signOut: vi.fn() });
+      mockUseAuth.mockReturnValue({
+        user: null,
+        isLoading: false,
+        signIn: vi.fn(),
+        signOut: vi.fn(),
+      });
       renderWithRouter(
         <ProtectedRoute>
           <div data-testid="protected-content">保護されたコンテンツ</div>
@@ -76,7 +99,12 @@ describe("ProtectedRoute", () => {
     });
 
     it("未認証のとき子コンポーネントを表示しない", () => {
-      mockUseAuth.mockReturnValue({ user: null, isLoading: false, signIn: vi.fn(), signOut: vi.fn() });
+      mockUseAuth.mockReturnValue({
+        user: null,
+        isLoading: false,
+        signIn: vi.fn(),
+        signOut: vi.fn(),
+      });
       renderWithRouter(
         <ProtectedRoute>
           <div data-testid="protected-content">保護されたコンテンツ</div>
