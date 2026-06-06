@@ -45,7 +45,7 @@
   - _Depends: 2.1, 2.2_
 
 - [ ] 3. Core - バックエンド実装
-- [ ] 3.1 (P) Cognito JWT 検証ミドルウェアを実装する
+- [x] 3.1 (P) Cognito JWT 検証ミドルウェアを実装する
   - `backend/src/types.ts` に `HonoEnv`（`Variables.jwtPayload: { sub: string; email: string }`）を定義する
   - `backend/src/middleware/auth.ts` に `cognitoAuthMiddleware` を実装する（`aws-jwt-verify`）
   - `CognitoJwtVerifier` をモジュールスコープで1回だけ生成してコールドスタート時の JWKS フェッチを最小化する
