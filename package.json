@@ -13,7 +13,11 @@
     "backend": "pnpm --filter @shin-blog-app/backend",
     "e2e": "playwright test",
     "e2e:list": "playwright test --list",
-    "e2e:ui": "playwright test --ui"
+    "e2e:ui": "playwright test --ui",
+    "floci:up": "docker compose up -d",
+    "floci:setup": "bash scripts/setup-local-aws.sh",
+    "floci:down": "docker compose down",
+    "floci:token": "bash scripts/dev-token.sh"
   },
   "keywords": [],
   "author": "",

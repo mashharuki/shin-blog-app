@@ -8,7 +8,18 @@ import {
 import type { CreatePostInput, Post, PostSummary } from "@shin-blog-app/shared";
 import { v4 as uuidv4 } from "uuid";
 
-const client = new DynamoDBClient({});
+const client = new DynamoDBClient(
+  process.env.AWS_ENDPOINT_URL
+    ? {
+        endpoint: process.env.AWS_ENDPOINT_URL,
+        region: process.env.AWS_REGION ?? "us-east-1",
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID ?? "local",
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY ?? "local",
+        },
+      }
+    : {},
+);
 const docClient = DynamoDBDocumentClient.from(client);
 const TABLE_NAME = process.env.TABLE_NAME ?? "BlogTable";
 
@@ -22,6 +33,9 @@ export interface PostRepository {
   ): Promise<Post>;
 }
 
+/**
+ * DynamoDBとの連携用のクラス
+ */
 export class DynamoDBPostRepository implements PostRepository {
   async listPosts(
     cursor?: string,
