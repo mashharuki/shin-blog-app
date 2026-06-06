@@ -8,6 +8,7 @@ import {
 import type { CreatePostInput, Post, PostSummary } from "@shin-blog-app/shared";
 import { v4 as uuidv4 } from "uuid";
 
+// DynamoDBクライアント
 const client = new DynamoDBClient(
   process.env.AWS_ENDPOINT_URL
     ? {
