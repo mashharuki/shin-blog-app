@@ -1,10 +1,13 @@
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as lambdaNodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import { join } from 'node:path';
 
 export class BlogStack extends cdk.Stack {
   public readonly table: dynamodb.TableV2;
@@ -84,5 +87,38 @@ export class BlogStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'DistributionUrl', {
       value: `https://${distribution.distributionDomainName}`,
     });
+
+    // --- Lambda API Function ---
+    const fn = new lambdaNodejs.NodejsFunction(this, 'BlogApiFunction', {
+      runtime: lambda.Runtime.NODEJS_20_X,
+      entry: join(__dirname, '../../backend/src/index.ts'),
+      handler: 'handler',
+      environment: {
+        TABLE_NAME: this.table.tableName,
+        COGNITO_USER_POOL_ID: this.userPool.userPoolId,
+        COGNITO_CLIENT_ID: this.userPoolClient.userPoolClientId,
+      },
+      bundling: {
+        externalModules: [],
+        minify: true,
+        forceDockerBundling: false,
+      },
+    });
+
+    // Grant minimal IAM permissions: read/write to DynamoDB table
+    this.table.grantReadWriteData(fn);
+
+    // Function URL (public, CORS configured)
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+      cors: {
+        allowedOrigins: ['*'], // Will be restricted to CloudFront URL in production
+        allowedMethods: [lambda.HttpMethod.GET, lambda.HttpMethod.POST, lambda.HttpMethod.OPTIONS],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        allowCredentials: false,
+      },
+    });
+
+    new cdk.CfnOutput(this, 'ApiUrl', { value: fnUrl.url });
   }
 }

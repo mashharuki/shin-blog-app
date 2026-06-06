@@ -36,7 +36,7 @@
   - _Requirements: 6.1_
   - _Boundary: BlogStack / CDK_
 
-- [ ] 2.4 Lambda Function・Function URL・IAM を CDK で定義する
+- [x] 2.4 Lambda Function・Function URL・IAM を CDK で定義する
   - `NodejsFunction`（Node.js 20.x）を定義し `TABLE_NAME`・`COGNITO_USER_POOL_ID`・`COGNITO_CLIENT_ID` を環境変数で注入する
   - `FunctionUrl`（`authType: NONE`, CORS: allowedOrigins/methods/headers 設定）を定義し URL を CfnOutput で出力する
   - `table.grantReadWriteData(fn)` で最小権限 IAM を付与する
