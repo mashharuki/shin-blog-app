@@ -92,7 +92,7 @@
   - _Requirements: 1.1, 1.2, 1.5, 2.2_
   - _Boundary: Frontend / Auth_
 
-- [ ] 4.2 (P) 型付き API クライアントを実装する
+- [x] 4.2 (P) 型付き API クライアントを実装する
   - `frontend/src/lib/api.ts` に `ApiClient`（`getPosts`・`getPost`・`createPost`）を実装する
   - POST リクエスト時に `fetchAuthSession` で idToken を取得し `Authorization: Bearer {token}` を付与する
   - GET リクエストは認証ヘッダーなしで `VITE_API_BASE_URL` に送信する
