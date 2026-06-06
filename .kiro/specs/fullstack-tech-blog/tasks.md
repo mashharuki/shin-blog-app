@@ -22,7 +22,7 @@
   - _Requirements: 3.2, 6.2_
   - _Boundary: BlogStack / CDK_
 
-- [ ] 2.2 (P) Cognito UserPool と UserPoolClient を CDK で定義する
+- [x] 2.2 (P) Cognito UserPool と UserPoolClient を CDK で定義する
   - `UserPool`（`signInAliases: { email: true }`, `selfSignUpEnabled: false`）を定義する
   - `UserPoolClient`（`authFlows: { userPassword: true, userSrp: true }`, `generateSecret: false`）を定義する
   - `cdk synth` で Cognito リソースがエラーなく合成されることを確認する
