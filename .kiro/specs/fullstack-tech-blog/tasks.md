@@ -1,6 +1,6 @@
 # Implementation Plan
 
-- [ ] 1. Foundation - 共有パッケージ（型・スキーマ）定義
+- [x] 1. Foundation - 共有パッケージ（型・スキーマ）定義
 - [x] 1.1 Post 型とインターフェースを定義する
   - `shared/src/types/post.ts` に `Post`・`PostSummary`・`CreatePostInput` 型を定義する（`authorName`・`tags` フィールド含む）
   - `shared/src/types/auth.ts` に `AuthUser` 型を定義する（`sub`, `email`）
@@ -14,7 +14,7 @@
   - `createPostSchema` で空文字・最大長超過・タグ5件超過を `parse` で検出できることをローカルで確認する
   - _Requirements: 1.3, 5.4, 6.4_
 
-- [ ] 2. Foundation - CDK インフラストラクチャ定義
+- [x] 2. Foundation - CDK インフラストラクチャ定義
 - [x] 2.1 (P) DynamoDB テーブルと GSI を CDK で定義する
   - `pkgs/cdk/lib/blog-stack.ts` に `TableV2`（PK=`pk`, SK=`sk`, on-demand billing）を定義する
   - GSI `byCreatedAt`（gsi1pk, gsi1sk, Projection: ALL）を設定する
@@ -44,7 +44,7 @@
   - _Requirements: 3.5, 4.4, 6.3_
   - _Depends: 2.1, 2.2_
 
-- [ ] 3. Core - バックエンド実装
+- [x] 3. Core - バックエンド実装
 - [x] 3.1 (P) Cognito JWT 検証ミドルウェアを実装する
   - `backend/src/types.ts` に `HonoEnv`（`Variables.jwtPayload: { sub: string; email: string }`）を定義する
   - `backend/src/middleware/auth.ts` に `cognitoAuthMiddleware` を実装する（`aws-jwt-verify`）
@@ -82,7 +82,7 @@
   - _Requirements: 3.5, 4.4, 6.3_
   - _Depends: 3.3_
 
-- [ ] 4. Core - フロントエンド認証基盤
+- [x] 4. Core - フロントエンド認証基盤
 - [x] 4.1 (P) Amplify 設定と useAuth フックを実装する
   - `frontend/src/lib/amplify.ts` に `Amplify.configure` を実装する（`VITE_COGNITO_USER_POOL_ID`・`VITE_COGNITO_CLIENT_ID`・`VITE_COGNITO_REGION` から設定）
   - `frontend/src/hooks/useAuth.ts` に `useAuth` フックを実装する（`user: AuthUser | null`・`isLoading`・`signIn`・`signOut`）
@@ -101,7 +101,7 @@
   - _Requirements: 3.1, 4.1, 5.3_
   - _Boundary: Frontend / Client_
 
-- [ ] 5. Core - UI コンポーネント実装
+- [x] 5. Core - UI コンポーネント実装
 - [x] 5.1 (P) タグカラーマッピングと BlogPostCard コンポーネントを実装する
   - `frontend/src/lib/tagColors.ts` にタグ名→カラーコードの定数マップ（AWS・TypeScript・React 等）を定義する
   - `frontend/src/components/blog/BlogPostCard.tsx` を実装する（著者アバター・タイトル2行クランプ・抜粋3行クランプ・タグ Badges 最大3件・readTime・いいね表示）

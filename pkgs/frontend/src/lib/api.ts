@@ -1,7 +1,7 @@
-import { fetchAuthSession } from 'aws-amplify/auth';
-import type { CreatePostInput, Post, PostSummary } from '@shin-blog-app/shared';
+import { fetchAuthSession } from "aws-amplify/auth";
+import type { CreatePostInput, Post, PostSummary } from "@shin-blog-app/shared";
 
-const baseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+const baseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000";
 
 async function getAuthHeader(): Promise<Record<string, string>> {
   const session = await fetchAuthSession();
@@ -11,8 +11,8 @@ async function getAuthHeader(): Promise<Record<string, string>> {
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (res.status === 401) {
-    window.location.href = '/login';
-    throw new Error('Unauthorized');
+    window.location.href = "/login";
+    throw new Error("Unauthorized");
   }
   if (!res.ok) {
     throw new Error(`API error: ${res.status}`);
@@ -22,10 +22,10 @@ async function handleResponse<T>(res: Response): Promise<T> {
 
 export const api = {
   async getPosts(
-    cursor?: string
+    cursor?: string,
   ): Promise<{ posts: PostSummary[]; nextCursor?: string }> {
     const url = new URL(`${baseUrl}/api/posts`);
-    if (cursor) url.searchParams.set('cursor', cursor);
+    if (cursor) url.searchParams.set("cursor", cursor);
     const res = await fetch(url.toString());
     return handleResponse(res);
   },
@@ -38,8 +38,8 @@ export const api = {
   async createPost(input: CreatePostInput): Promise<Post> {
     const authHeaders = await getAuthHeader();
     const res = await fetch(`${baseUrl}/api/posts`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeaders },
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...authHeaders },
       body: JSON.stringify(input),
     });
     return handleResponse(res);
