@@ -65,7 +65,7 @@
   - _Requirements: 3.1, 3.2, 4.1, 4.2, 5.3, 6.2_
   - _Boundary: Backend / Data_
 
-- [ ] 3.3 Posts API ルーターを実装する
+- [x] 3.3 Posts API ルーターを実装する
   - `backend/src/routes/posts.ts` に Hono ルーターを作成し3エンドポイントを実装する
   - `GET /api/posts`（認証不要）: `query.cursor` を受け取り `PostRepository.listPosts` を呼び出す
   - `GET /api/posts/:id`（認証不要）: `PostRepository.getPost` を呼び出し未存在は 404 を返す
