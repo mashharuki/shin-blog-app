@@ -111,7 +111,7 @@
   - _Requirements: 3.1, 3.3_
   - _Boundary: Frontend / Blog_
 
-- [ ] 5.2 (P) MarkdownEditor コンポーネントを実装する
+- [x] 5.2 (P) MarkdownEditor コンポーネントを実装する
   - `frontend/src/components/blog/MarkdownEditor.tsx` を実装する
   - ツールバー7ボタン（Bold・Italic・H2・Code・Link・Image・List）を実装し、`textarea` の `selectionStart`/`selectionEnd` で選択テキストを包む挿入ロジックを実装する
   - 編集ペイン（JetBrains Mono フォント）と `react-markdown` プレビューペイン（remark-gfm + rehype-highlight）を Tailwind `flex` で並列配置する
