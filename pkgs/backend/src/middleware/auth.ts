@@ -2,12 +2,17 @@ import { CognitoJwtVerifier } from 'aws-jwt-verify';
 import type { MiddlewareHandler } from 'hono';
 import type { HonoEnv } from '../types.js';
 
-// CognitoJwtVerifier is created once at module scope to reuse JWKS cache
-// across warm Lambda invocations (cold start optimization)
+const userPoolId = process.env.COGNITO_USER_POOL_ID;
+const clientId = process.env.COGNITO_CLIENT_ID;
+if (!userPoolId || !clientId) {
+  throw new Error('COGNITO_USER_POOL_ID and COGNITO_CLIENT_ID env vars are required');
+}
+
+// Created once at module scope to reuse JWKS cache across warm Lambda invocations
 const verifier = CognitoJwtVerifier.create({
-  userPoolId: process.env.COGNITO_USER_POOL_ID!,
+  userPoolId,
   tokenUse: 'id',
-  clientId: process.env.COGNITO_CLIENT_ID!,
+  clientId,
 });
 
 export const cognitoAuthMiddleware: MiddlewareHandler<HonoEnv> = async (c, next) => {

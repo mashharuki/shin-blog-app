@@ -2,6 +2,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Hono } from 'hono';
 import type { HonoEnv } from '../types.js';
 
+// Set required env vars before module import
+vi.stubEnv('COGNITO_USER_POOL_ID', 'test-pool-id');
+vi.stubEnv('COGNITO_CLIENT_ID', 'test-client-id');
+
 // Mock aws-jwt-verify BEFORE importing auth middleware
 vi.mock('aws-jwt-verify', () => ({
   CognitoJwtVerifier: {

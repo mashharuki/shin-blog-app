@@ -55,7 +55,7 @@
   - _Requirements: 1.4, 5.5, 6.3_
   - _Boundary: Backend / Auth_
 
-- [ ] 3.2 (P) Post リポジトリ（DynamoDB CRUD）を実装する
+- [x] 3.2 (P) Post リポジトリ（DynamoDB CRUD）を実装する
   - `backend/src/repositories/post.repository.ts` に `PostRepository` インターフェースと実装クラスを実装する
   - `listPosts`: GSI `byCreatedAt` を `ScanIndexForward: false`・`Limit: 20` でクエリし `ExclusiveStartKey` によるカーソルページネーションを実装する
   - `getPost`: PK=`POST#{postId}`・SK=`#METADATA` で GetItem し未存在は `null` を返す
