@@ -29,7 +29,7 @@
   - _Requirements: 1.1, 6.3_
   - _Boundary: BlogStack / CDK_
 
-- [ ] 2.3 (P) S3 + CloudFront で SPA ホスティングを CDK で定義する
+- [x] 2.3 (P) S3 + CloudFront で SPA ホスティングを CDK で定義する
   - `S3 Bucket`（`blockPublicAccess: BLOCK_ALL`）と CloudFront OAC を定義する
   - `DistributionProps` で 404 時に `/index.html` へフォールバックするエラーレスポンスを設定する
   - `cdk synth` で S3/CloudFront リソースがエラーなく合成されることを確認する
