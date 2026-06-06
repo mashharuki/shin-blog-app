@@ -1,7 +1,7 @@
 # Implementation Plan
 
 - [ ] 1. Foundation - 共有パッケージ（型・スキーマ）定義
-- [ ] 1.1 Post 型とインターフェースを定義する
+- [x] 1.1 Post 型とインターフェースを定義する
   - `shared/src/types/post.ts` に `Post`・`PostSummary`・`CreatePostInput` 型を定義する（`authorName`・`tags` フィールド含む）
   - `shared/src/types/auth.ts` に `AuthUser` 型を定義する（`sub`, `email`）
   - `shared/src/index.ts` で全型・スキーマをエクスポートする
