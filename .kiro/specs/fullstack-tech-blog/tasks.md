@@ -83,7 +83,7 @@
   - _Depends: 3.3_
 
 - [ ] 4. Core - フロントエンド認証基盤
-- [ ] 4.1 (P) Amplify 設定と useAuth フックを実装する
+- [x] 4.1 (P) Amplify 設定と useAuth フックを実装する
   - `frontend/src/lib/amplify.ts` に `Amplify.configure` を実装する（`VITE_COGNITO_USER_POOL_ID`・`VITE_COGNITO_CLIENT_ID`・`VITE_COGNITO_REGION` から設定）
   - `frontend/src/hooks/useAuth.ts` に `useAuth` フックを実装する（`user: AuthUser | null`・`isLoading`・`signIn`・`signOut`）
   - アプリ起動時に `fetchAuthSession` でセッションを復元する（`useEffect` 内）
