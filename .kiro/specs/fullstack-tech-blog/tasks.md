@@ -174,7 +174,7 @@
   - 未認証状態で `/create` に直接アクセスするとログインページにリダイレクトされることを確認する
   - _Requirements: 1.4, 2.1, 2.2, 2.3, 5.5, 6.1_
 
-- [ ] 7.2 フロントエンドとバックエンドの環境変数と接続を統合する
+- [x] 7.2 フロントエンドとバックエンドの環境変数と接続を統合する
   - `frontend/.env.local` に `VITE_API_BASE_URL`・`VITE_COGNITO_USER_POOL_ID`・`VITE_COGNITO_CLIENT_ID`・`VITE_COGNITO_REGION` を設定する
   - `backend/.env` に `COGNITO_USER_POOL_ID`・`COGNITO_CLIENT_ID`・`TABLE_NAME`・`AWS_REGION`・`CORS_ORIGIN` を設定する
   - ローカル環境でバックエンドを起動し `GET http://localhost:3000/api/posts` が 200 を返すことを確認する
