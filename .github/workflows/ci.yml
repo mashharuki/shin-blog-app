@@ -107,6 +107,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build shared (required by frontend)
+        run: pnpm --filter @shin-blog-app/shared build
+
       - name: Run frontend tests
         run: pnpm frontend test
 

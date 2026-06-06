@@ -35,10 +35,13 @@ class MockIntersectionObserver {
   observe = mockObserve;
   disconnect = mockDisconnect;
   unobserve = vi.fn();
+  callback: IntersectionObserverCallback;
   constructor(
-    public callback: IntersectionObserverCallback,
+    callback: IntersectionObserverCallback,
     _options?: IntersectionObserverInit,
-  ) {}
+  ) {
+    this.callback = callback;
+  }
 }
 vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
 
