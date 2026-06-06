@@ -15,7 +15,7 @@
   - _Requirements: 1.3, 5.4, 6.4_
 
 - [ ] 2. Foundation - CDK インフラストラクチャ定義
-- [ ] 2.1 (P) DynamoDB テーブルと GSI を CDK で定義する
+- [x] 2.1 (P) DynamoDB テーブルと GSI を CDK で定義する
   - `pkgs/cdk/lib/blog-stack.ts` に `TableV2`（PK=`pk`, SK=`sk`, on-demand billing）を定義する
   - GSI `byCreatedAt`（gsi1pk, gsi1sk, Projection: ALL）を設定する
   - `cdk synth` で DynamoDB リソースがエラーなく合成されることを確認する
