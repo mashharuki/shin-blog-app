@@ -181,14 +181,14 @@
   - _Requirements: 6.3_
 
 - [ ] 8. Validation - テストと品質検証
-- [ ] 8.1 (P) 共有スキーマのユニットテストを実装する
+- [x] 8.1 (P) 共有スキーマのユニットテストを実装する
   - `shared/src/schemas/post.test.ts` を作成する
   - `createPostSchema` の境界値テスト（空文字・タイトル200文字超過・本文50000文字超過・タグ6件）を実装する
   - `vitest run --project shared` で全テストが通ることを確認する
   - _Requirements: 1.3, 5.4, 6.4_
   - _Boundary: Shared_
 
-- [ ] 8.2 (P) バックエンドのユニットテストを実装する
+- [x] 8.2 (P) バックエンドのユニットテストを実装する
   - `backend/src/middleware/auth.test.ts`: 有効 JWT・無効 JWT・`Authorization` ヘッダー欠如の各ケースをテストする（`aws-jwt-verify` をモック）
   - `backend/src/repositories/post.repository.test.ts`: `listPosts`（ページネーション込み）・`getPost`（存在・不存在）・`createPost` を DynamoDB モックでテストする
   - `backend/src/routes/posts.test.ts`: 全3エンドポイントの正常系・エラー系を Hono テストクライアントでテストする
@@ -196,7 +196,7 @@
   - _Requirements: 3.5, 4.4, 5.5, 6.3_
   - _Boundary: Backend_
 
-- [ ] 8.3 (P) フロントエンド useAuth のユニットテストを実装する
+- [x] 8.3 (P) フロントエンド useAuth のユニットテストを実装する
   - `frontend/src/hooks/useAuth.test.ts` を作成する
   - `signIn` 成功・失敗・`signOut`・初期セッション復元の各ケースをテストする（`aws-amplify/auth` をモック）
   - `vitest run --project frontend` で全フロントエンドテストが通ることを確認する
