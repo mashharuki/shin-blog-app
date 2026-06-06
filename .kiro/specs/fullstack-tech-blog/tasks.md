@@ -155,7 +155,7 @@
   - _Requirements: 4.1, 4.2, 4.3, 4.4_
   - _Boundary: Frontend / Page_
 
-- [ ] 6.4 (P) 記事投稿ページを実装する
+- [x] 6.4 (P) 記事投稿ページを実装する
   - `frontend/src/pages/BlogCreatePage.tsx` を実装する
   - タイトル入力欄（ヘッダーインライン）・タグ入力（Enter で追加・×で削除・最大5件）・`MarkdownEditor` を配置する
   - 投稿ボタン押下時に `createPostSchema` で zod バリデーションを行い、エラーは各フィールドに表示する
