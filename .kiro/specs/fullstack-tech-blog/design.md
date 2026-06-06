@@ -169,7 +169,8 @@ pkgs/
 │   │   │   └── useAuth.ts        # aws-amplify v6 ラッパー（user, signIn, signOut, isLoading）
 │   │   └── lib/
 │   │       ├── api.ts            # 型付き API クライアント（JWT 自動付与）
-│   │       └── amplify.ts        # Amplify.configure 設定
+│   │       ├── amplify.ts        # Amplify.configure 設定
+│   │       └── tagColors.ts      # タグ名→カラーコードのマッピング定数
 │   └── package.json              # aws-amplify, react-markdown 等追加
 │
 └── cdk/
@@ -287,18 +288,18 @@ sequenceDiagram
 |-----------|-------------|--------|--------------|-----------------|
 | useAuth | Frontend / Hook | Cognito 認証状態管理 | 1.1–1.5, 2.1–2.3 | aws-amplify v6 (P0) |
 | ProtectedRoute | Frontend / Auth | 未認証ルート保護 | 1.4, 2.3, 5.5 | useAuth (P0) |
-| MarkdownEditor | Frontend / Blog | スプリットペインエディタ | 5.1, 5.2 | react-markdown (P0) |
+| MarkdownEditor | Frontend / Blog | ツールバー付きスプリットペインエディタ | 5.1, 5.2 | react-markdown (P0) |
+| BlogPostCard | Frontend / Blog | 一覧カード（タグ・readTime表示含む） | 3.1, 3.3 | react-router-dom |
 | api.ts | Frontend / Client | 型付きAPIクライアント | 3.1, 4.1, 5.3 | aws-amplify fetchAuthSession (P0) |
-| LoginPage | Frontend / Page | ログインフォーム | 1.1–1.3 | useAuth, shadcn/ui Form |
-| TopPage | Frontend / Page | 記事一覧 | 3.1–3.5 | api.ts, BlogPostCard |
-| BlogDetailPage | Frontend / Page | 記事詳細 | 4.1–4.4 | api.ts, react-markdown |
-| BlogCreatePage | Frontend / Page | 記事投稿 | 5.1–5.5 | MarkdownEditor, api.ts |
-| NavBar | Frontend / Layout | ナビゲーション・ログアウト | 2.1, 2.2 | useAuth |
-| BlogPostCard | Frontend / Blog | 一覧カード表示 | 3.1, 3.3 | react-router-dom |
+| LoginPage | Frontend / Page | ログインフォーム（2カラムレイアウト） | 1.1–1.3 | useAuth, shadcn/ui Form |
+| TopPage | Frontend / Page | 記事一覧（タブ・タグフィルター・無限スクロール） | 3.1–3.5 | api.ts, BlogPostCard |
+| BlogDetailPage | Frontend / Page | 記事詳細（TOCサイドバー・関連記事） | 4.1–4.4 | api.ts, react-markdown |
+| BlogCreatePage | Frontend / Page | 記事投稿（タグ入力含む） | 5.1–5.5 | MarkdownEditor, api.ts |
+| NavBar | Frontend / Layout | スティッキーHeader（検索・ダークモード・ドロップダウン・モバイルメニュー） | 2.1, 2.2, 6.1 | useAuth |
 | cognitoAuthMiddleware | Backend / Auth | JWT 検証 Hono ミドルウェア | 1.4, 5.5, 6.3 | aws-jwt-verify (P0) |
 | PostsRouter | Backend / API | REST エンドポイント定義 | 3.1–3.5, 4.1–4.4, 5.3 | cognitoAuthMiddleware, PostRepository |
 | PostRepository | Backend / Data | DynamoDB アクセス層 | 3.2, 4.2, 5.3, 6.2 | @aws-sdk/lib-dynamodb (P0) |
-| PostTypes / PostSchema | Shared | 型・バリデーション定義 | 1.3, 5.4, 6.4 | zod (P0) |
+| PostTypes / PostSchema | Shared | 型・バリデーション定義（tags含む） | 1.3, 5.4, 6.4 | zod (P0) |
 | BlogStack | Infra / CDK | 全 AWS リソース定義 | 6.1–6.4 | aws-cdk-lib (P0) |
 
 ---
@@ -360,13 +361,56 @@ interface UseAuthReturn {
 
 ---
 
+### Frontend / Layout
+
+#### NavBar（Header）
+
+| Field | Detail |
+|-------|--------|
+| Intent | スティッキーヘッダー。ロゴ・ナビ・検索・ダークモード切替・投稿ボタン・ユーザードロップダウン・モバイルメニューを提供 |
+| Requirements | 2.1, 2.2, 6.1 |
+
+**Dependencies**
+- Inbound: useAuth（user, signOut） (P0)
+- Inbound: react-router-dom useNavigate (P0)
+
+**Contracts**: Service [ ] / API [ ] / Event [ ] / Batch [ ] / State [x]
+
+```typescript
+interface NavBarProps {
+  darkMode: boolean;
+  onDarkModeToggle: () => void;
+}
+```
+
+**UI Structure**
+
+```
+┌─ Header (sticky, backdrop-blur) ────────────────────────────────────┐
+│ [🗎 Shin Tech Blog]  [ホーム][タグ][人気]  (flex-grow)  [🔍][🌙][投稿する][Avatar▼] │
+│                                                                       │
+│ ── Mobile (< 768px) ─────────────────────────────────────────────── │
+│ [🗎 STB]  (flex-grow)  [🔍][🌙][☰]                                   │
+│   slide-down: [ホーム][タグ][人気] | [投稿する][user info][ログアウト]  │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**Implementation Notes**
+- `position: sticky; top: 0; backdrop-filter: blur(14px)` でガラス効果ヘッダー
+- ユーザードロップダウンは外側クリックで閉じる（`useEffect` + `mousedown`）
+- 未認証時はログインボタン、認証済み時は「投稿する」ボタン＋アバタードロップダウンを表示
+- アバタードロップダウン: プロフィール・自分の記事（リンクのみ、ページ実装は非スコープ）・ログアウト
+- ダークモード状態は `App.tsx` の useState で管理し、`document.documentElement` の `data-theme` 属性と CSS 変数を更新
+
+---
+
 ### Frontend / Blog
 
 #### MarkdownEditor
 
 | Field | Detail |
 |-------|--------|
-| Intent | 左ペイン：textarea、右ペイン：react-markdown リアルタイムプレビュー（スプリットペイン） |
+| Intent | マークダウンエディタ本体。マークダウンツールバー・スプリットペインエディタ・リアルタイムプレビューを提供 |
 | Requirements | 5.1, 5.2 |
 
 **Dependencies**
@@ -382,10 +426,83 @@ interface MarkdownEditorProps {
 }
 ```
 
+**UI Structure**
+
+```
+┌─ Toolbar ──────────────────────────────────────────────┐
+│ [Bold] [Italic] [H2] [Code] [Link] [Image] [List]       │
+├─ Pane Selector ──────────────────────────────────────── │
+│  [編集] [分割 ※PCのみ] [プレビュー]                      │
+├──────────────────────────────────────────────────────── │
+│  textarea (JetBrains Mono)  │  react-markdown preview   │
+│  (編集ペイン)                │  (プレビューペイン)        │
+├─ StatusBar ──────────────────────────────────────────── │
+│  {n}文字  約{w}語  Markdown                              │
+└──────────────────────────────────────────────────────── ┘
+```
+
 **Implementation Notes**
-- スプリットペインは Tailwind CSS の `grid grid-cols-2` で実装（外部ライブラリ不要）
+- スプリットペインは Tailwind CSS の `flex` + `w-1/2` で実装（外部ライブラリ不要）
+- モバイル（<768px）では「分割」ペインを非表示にし「編集/プレビュー」の2択にする
+- ツールバーの挿入ボタンは `textarea` の `selectionStart`/`selectionEnd` を使いテキストを包むか先頭に挿入
 - `react-markdown` は `remarkPlugins={[remarkGfm]}` で GFM（テーブル・タスクリスト等）を有効化
-- `rehype-highlight` でコードブロックのシンタックスハイライトを提供
+- `rehype-highlight` でコードブロックのシンタックスハイライトを提供（GitHub Dark テーマ）
+
+---
+
+#### BlogPostCard
+
+| Field | Detail |
+|-------|--------|
+| Intent | 一覧画面のブログ記事カード。著者・タイトル・抜粋・タグ・readTime を表示 |
+| Requirements | 3.1, 3.3 |
+
+**Contracts**: Service [ ] / API [ ] / Event [ ] / Batch [ ] / State [ ]
+
+```typescript
+interface BlogPostCardProps {
+  post: PostSummary;
+  onClick: () => void;
+}
+```
+
+**UI Structure**
+
+```
+┌─ Card (hover: border-primary, shadow, translateY(-2px)) ─┐
+│ [Avatar] AuthorName · createdAt                            │
+│ Title (2-line clamp, font-bold)                            │
+│ Excerpt (3-line clamp, text-secondary)                     │
+│ [#tag1] [#tag2] [#tag3] (最大3件、色付きBadge)             │
+│ ── separator ──────────────────────────────────── │
+│ ⏱ {readTime}分  ♥ {likes}                                  │
+└────────────────────────────────────────────────────────── ┘
+```
+
+**Implementation Notes**
+- `readTime` はクライアントサイドで `Math.ceil(content.split(' ').length / 200)` から計算（APIには含めない）
+- タグは `PostSummary.tags` から最大3件を Badge コンポーネントで表示
+- `likes` は今回スコープ外のため UI 表示のみ（静的値 0）とし、インタラクションは非実装
+
+---
+
+#### TopPage（実装ノート）
+
+- タブ: 「最新」（createdAt DESC）/ 「トレンド」（likes DESC、今回は createdAt DESC と同一）の切り替え UI を提供（UI のみ、APIは最新順のみ）
+- タグフィルターチップ: `PostSummary.tags` の全 unique タグをチップで表示し、選択でクライアントサイドフィルタリング
+- 検索バー: タイトル・タグのクライアントサイド絞り込み
+- 無限スクロール: `IntersectionObserver` で `nextCursor` が存在する限り追加取得（`api.ts.getPosts(cursor)`）
+
+#### BlogDetailPage（実装ノート）
+
+- **目次（TOC）**: マークダウン見出し（`## ...`）を正規表現で抽出し、デスクトップではスティッキーサイドバー、モバイルではアコーディオンで表示
+- **関連記事**: 同じタグを持つ記事をトップ3件表示（クライアントサイドフィルタリング、次スプリントでのAPI実装も可）
+- **いいね/保存/シェアボタン**: UI のみ（クライアントローカル state、永続化は非スコープ）
+
+#### BlogCreatePage（実装ノート）
+
+- タグ入力: `Enter` キーでタグ追加、×ボタンで削除、最大5件制限は `createPostSchema` で保証
+- `MarkdownEditor` を組み込み、タイトル・本文・タグを `createPostSchema` で zod バリデーション後 `api.ts.createPost()` を呼び出す
 
 ---
 
@@ -525,24 +642,28 @@ interface Post {
   content: string;       // raw markdown
   authorId: string;      // Cognito sub
   authorEmail: string;
+  authorName: string;    // 表示用投稿者名（Cognito displayName 相当）
+  tags: string[];        // タグ一覧（例: ["TypeScript", "AWS"]）
   createdAt: string;     // ISO 8601
 }
 
-type PostSummary = Pick<Post, "postId" | "title" | "authorEmail" | "createdAt"> & {
+type PostSummary = Pick<Post, "postId" | "title" | "authorEmail" | "authorName" | "tags" | "createdAt"> & {
   excerpt: string;       // content の先頭 200 文字
 };
 
 interface CreatePostInput {
   title: string;
   content: string;
+  tags?: string[];       // 省略可（デフォルト []）
 }
 ```
 
 ```typescript
 // shared/src/schemas/post.ts
 const createPostSchema = z.object({
-  title: z.string().min(1, "タイトルは必須です").max(200),
+  title:   z.string().min(1, "タイトルは必須です").max(200),
   content: z.string().min(1, "本文は必須です").max(50000),
+  tags:    z.array(z.string().max(30)).max(5).optional().default([]),
 });
 
 const postIdSchema = z.string().uuid();
@@ -581,6 +702,8 @@ BlogPost (Aggregate Root)
   - content: string (1–50000文字、raw markdown)
   - authorId: string (Cognito sub, 不変)
   - authorEmail: string
+  - authorName: string (表示用、Cognito email prefix から生成)
+  - tags: string[] (最大5件、各最大30文字、デフォルト [])
   - createdAt: ISO 8601 timestamp (不変)
 
 Invariant: postId は一意。createdAt・authorId は作成後不変。
@@ -601,6 +724,8 @@ Invariant: postId は一意。createdAt・authorId は作成後不変。
 | content | String | マークダウン本文 | `"# Hello\n..."` |
 | authorId | String | Cognito sub | `"abc123..."` |
 | authorEmail | String | 投稿者メール | `"user@example.com"` |
+| authorName | String | 表示用投稿者名 | `"山田 太郎"` |
+| tags | List\<String\> | タグ一覧 | `["TypeScript", "AWS"]` |
 | createdAt | String | 作成日時 ISO | `"2026-06-04T..."` |
 
 **GSI: byCreatedAt**
@@ -658,6 +783,43 @@ Invariant: postId は一意。createdAt・authorId は作成後不変。
 2. **未認証ガード**: 未ログイン状態で `/create` にアクセス → ログイン画面へリダイレクト確認
 3. **マークダウンプレビュー**: 投稿画面でマークダウン入力後、プレビューエリアにレンダリング内容が反映されることを確認
 4. **ログアウト→セッション切断**: ログアウト後にブラウザバックで投稿画面に戻れないことを確認
+
+---
+
+## UI Design System
+
+UIデザインは `docs/ui_design/` のリファレンスデザインに準拠する。
+
+### CSS Custom Properties（Tailwind 変数として定義）
+
+| 変数 | Light | Dark | 用途 |
+|------|-------|------|------|
+| `--bg` | `#ffffff` | `#0f172a` | ページ背景 |
+| `--bg-secondary` | `#f8fafc` | `#1e293b` | カード・インプット背景 |
+| `--bg-tertiary` | `#f1f5f9` | `#263347` | ホバー背景 |
+| `--text` | `#0f172a` | `#f1f5f9` | 本文テキスト |
+| `--text-secondary` | `#475569` | `#94a3b8` | 補助テキスト |
+| `--text-muted` | `#94a3b8` | `#64748b` | 薄いテキスト |
+| `--primary` | `#3b82f6` | `#3b82f6` | アクセントカラー |
+| `--border` | `#e2e8f0` | `#334155` | 枠線 |
+
+### ダークモード
+
+- `document.documentElement` に `data-theme="dark"` を付与し CSS 変数を切り替える
+- ダークモード状態は `App.tsx` の `useState` で管理、`localStorage` に永続化
+- Tailwind の `dark:` prefix は使用せず、CSS 変数切り替えのみで実装
+
+### タイポグラフィ
+
+- ベースフォント: Inter / Noto Sans JP（`font-family: 'Inter', 'Noto Sans JP', system-ui, sans-serif`）
+- コードブロック: JetBrains Mono / Fira Code / SF Mono（monospace）
+- フォントは Google Fonts から読み込み
+
+### タグカラーマッピング
+
+よく使われるタグには固有色を付与（例: `AWS: #f59e0b`, `TypeScript: #3178c6`, `React: #06b6d4`）。
+未定義タグは `--bg-tertiary` / `--text-secondary` をフォールバックとして使用する。
+実装は `frontend/src/lib/tagColors.ts` に定数マップとして定義する。
 
 ---
 
