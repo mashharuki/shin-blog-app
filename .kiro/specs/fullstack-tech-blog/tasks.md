@@ -164,7 +164,7 @@
   - _Requirements: 5.1, 5.3, 5.4, 5.5_
   - _Boundary: Frontend / Page_
 
-- [ ] 7. Integration - アプリケーション統合とルーティング
+- [x] 7. Integration - アプリケーション統合とルーティング
 - [x] 7.1 NavBar/Header・App ルーティング・ProtectedRoute を統合する
   - `frontend/src/components/layout/NavBar.tsx` を実装する（ロゴ・ナビ・検索バー・ダークモード切替・「投稿する」ボタン・アバタードロップダウン・モバイルハンバーガーメニュー）
   - `frontend/src/components/auth/ProtectedRoute.tsx` を実装する（`isLoading` 中はスピナー表示・未認証は `<Navigate replace to="/login" />`）
@@ -203,7 +203,7 @@
   - _Requirements: 1.1, 1.2, 1.5, 2.2_
   - _Boundary: Frontend / Auth_
 
-- [ ] 8.4 E2E テスト（Playwright）を実装する
+- [x] 8.4 E2E テスト（Playwright）を実装する
   - テスト1「ログイン→投稿→詳細確認」: ログイン → 投稿ページで記事入力 → 投稿 → 詳細ページで内容確認
   - テスト2「未認証ガード」: 未ログイン状態で `/create` にアクセス → ログインページへのリダイレクト確認
   - テスト3「マークダウンプレビュー」: 投稿画面でマークダウン入力後プレビューエリアに反映されることを確認

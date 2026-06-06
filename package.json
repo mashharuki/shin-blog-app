@@ -10,13 +10,19 @@
     "shared": "pnpm --filter @shin-blog-app/shared",
     "cdk": "pnpm --filter @shin-blog-app/cdk",
     "frontend": "pnpm --filter @shin-blog-app/frontend",
-    "backend": "pnpm --filter @shin-blog-app/backend"
+    "backend": "pnpm --filter @shin-blog-app/backend",
+    "e2e": "playwright test",
+    "e2e:list": "playwright test --list",
+    "e2e:ui": "playwright test --ui"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "packageManager": "pnpm@10.33.0",
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4"
+    "@biomejs/biome": "^1.9.4",
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^25.9.2",
+    "typescript": "^6.0.3"
   }
 }

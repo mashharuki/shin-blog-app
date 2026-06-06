@@ -7,3 +7,5 @@ dist/
 .env
 memory
 .playwright
+playwright-report/
+test-results/
