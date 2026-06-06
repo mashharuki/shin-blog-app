@@ -9,7 +9,7 @@
   - `tsc --noEmit` でコンパイルエラーがゼロになることを確認する
   - _Requirements: 6.4_
 
-- [ ] 1.2 Zod バリデーションスキーマを定義する
+- [x] 1.2 Zod バリデーションスキーマを定義する
   - `shared/src/schemas/post.ts` に `createPostSchema`（title・content・tags?）と `postIdSchema` を実装する
   - `createPostSchema` で空文字・最大長超過・タグ5件超過を `parse` で検出できることをローカルで確認する
   - _Requirements: 1.3, 5.4, 6.4_
