@@ -74,7 +74,7 @@
   - _Requirements: 3.1, 3.5, 4.1, 4.2, 4.4, 5.3, 5.5_
   - _Depends: 3.1, 3.2_
 
-- [ ] 3.4 Hono アプリのエントリポイントと Lambda ハンドラーを実装する
+- [x] 3.4 Hono アプリのエントリポイントと Lambda ハンドラーを実装する
   - `backend/src/index.ts` で Hono アプリを構築し CORS ミドルウェアを設定する（origin を `CORS_ORIGIN` 環境変数から指定）
   - `/api` 配下に PostsRouter をマウントする
   - Lambda デプロイ用に `hono/aws-lambda` の `handle` でハンドラーをエクスポートする
