@@ -101,12 +101,19 @@ echo "✅ Setup complete!  Add these to pkgs/backend/.env:"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 cat <<ENV
 
+# DynamoDB endpoint (Floci emulator)
 TABLE_NAME=$TABLE_NAME
 AWS_ENDPOINT_URL=$ENDPOINT
 AWS_REGION=$REGION
+
+# Dummy credentials for Floci — SDK credential provider chain picks these up.
+# In Lambda the execution IAM role is used automatically; these keys are never deployed.
 AWS_ACCESS_KEY_ID=local
 AWS_SECRET_ACCESS_KEY=local
+
+# Auth bypass — skips Cognito JWKS verification in local dev only
 LOCAL_DEV=true
+
 CORS_ORIGIN=http://localhost:5173
 ENV
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

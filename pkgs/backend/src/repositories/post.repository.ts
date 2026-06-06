@@ -8,16 +8,15 @@ import {
 import type { CreatePostInput, Post, PostSummary } from "@shin-blog-app/shared";
 import { v4 as uuidv4 } from "uuid";
 
-// DynamoDBクライアント
+// Credentials are resolved by the SDK's default provider chain:
+//   Lambda     → IAM execution role (automatic)
+//   Local dev  → AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY env vars (set in .env, gitignored)
+//   CI         → OIDC-issued short-lived credentials
 const client = new DynamoDBClient(
   process.env.AWS_ENDPOINT_URL
     ? {
         endpoint: process.env.AWS_ENDPOINT_URL,
         region: process.env.AWS_REGION ?? "us-east-1",
-        credentials: {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID ?? "local",
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY ?? "local",
-        },
       }
     : {},
 );
