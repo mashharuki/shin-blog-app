@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute.js";
 import { NavBar } from "./components/layout/NavBar.js";
+import { AuthProvider } from "./context/AuthContext.js";
 import { BlogCreatePage } from "./pages/BlogCreatePage.js";
 import { BlogDetailPage } from "./pages/BlogDetailPage.js";
 import { LoginPage } from "./pages/LoginPage.js";
@@ -29,9 +30,10 @@ function App() {
 
   return (
     <BrowserRouter>
-      <NavBar darkMode={darkMode} onDarkModeToggle={handleDarkModeToggle} />
-      <main>
-        <Routes>
+      <AuthProvider>
+        <NavBar darkMode={darkMode} onDarkModeToggle={handleDarkModeToggle} />
+        <main>
+          <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<TopPage />} />
           <Route path="/posts/:postId" element={<BlogDetailPage />} />
@@ -43,8 +45,9 @@ function App() {
               </ProtectedRoute>
             }
           />
-        </Routes>
-      </main>
+          </Routes>
+        </main>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

@@ -25,8 +25,11 @@ test.describe("ログイン → 投稿 → 詳細確認", () => {
     // ── Setup ──────────────────────────────────────────────────────────────
     let capturedPost: MockPost | null = null;
 
-    // Mock Cognito auth API so signIn() succeeds without real credentials
-    await mockCognitoRoutes(page, MOCK_USER);
+    // Mock Cognito auth API so signIn() succeeds without real credentials.
+    // skipInjection: true — don't pre-inject localStorage tokens; the test
+    // exercises the actual login UI flow and pre-existing tokens would cause
+    // "There is already a signed in user" errors.
+    await mockCognitoRoutes(page, MOCK_USER, { skipInjection: true });
 
     // Mock backend API – capture the POST body to verify it
     await page.route("**/api/posts", async (route) => {
@@ -133,7 +136,8 @@ test.describe("ログイン → 投稿 → 詳細確認", () => {
   test("ログイン後トップページに遷移し記事一覧が表示される", async ({
     page,
   }) => {
-    await mockCognitoRoutes(page, MOCK_USER);
+    // skipInjection: true — same reason as the test above
+    await mockCognitoRoutes(page, MOCK_USER, { skipInjection: true });
     await mockApiRoutes(page);
 
     await page.goto("/login");

@@ -40,7 +40,11 @@ export function useAuth(): UseAuthReturn {
   }, []);
 
   const signIn = async (email: string, password: string): Promise<void> => {
-    const result = await amplifySignIn({ username: email, password });
+    const result = await amplifySignIn({
+      username: email,
+      password,
+      options: { authFlowType: "USER_PASSWORD_AUTH" },
+    });
     if (result.isSignedIn) {
       const session = await fetchAuthSession();
       const currentUser = await getCurrentUser();

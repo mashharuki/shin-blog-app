@@ -138,6 +138,7 @@ describe("useAuth", () => {
       expect(mockSignInFn).toHaveBeenCalledWith({
         username: "user@example.com",
         password: "password123",
+        options: { authFlowType: "USER_PASSWORD_AUTH" },
       });
     });
 

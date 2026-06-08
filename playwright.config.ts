@@ -31,7 +31,7 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
     env: {
-      VITE_COGNITO_CLIENT_ID: "",
+      VITE_COGNITO_CLIENT_ID: "test-client-id-for-e2e",
       VITE_COGNITO_USER_POOL_ID: "us-east-1_test",
       VITE_COGNITO_REGION: "us-east-1",
       VITE_API_BASE_URL: "http://localhost:3000",

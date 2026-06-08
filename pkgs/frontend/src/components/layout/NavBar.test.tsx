@@ -7,7 +7,7 @@ vi.mock("../../lib/amplify.js", () => ({}));
 
 // Mock useAuth
 const mockUseAuth = vi.fn();
-vi.mock("../../hooks/useAuth.js", () => ({
+vi.mock("../../context/AuthContext.js", () => ({
   useAuth: () => mockUseAuth(),
 }));
 

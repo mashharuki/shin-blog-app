@@ -8,17 +8,38 @@ import type { Page } from "@playwright/test";
  * (using Amplify v6's key format) and mock Cognito API calls at the network
  * level via page.route().
  *
- * With VITE_COGNITO_CLIENT_ID="" (empty string in test env), the Amplify
+ * With VITE_COGNITO_CLIENT_ID="test-client-id-for-e2e" (set in playwright.config.ts), the Amplify
  * localStorage keys become:
- *   CognitoIdentityServiceProvider..LastAuthUser
- *   CognitoIdentityServiceProvider...{username}.idToken
+ *   CognitoIdentityServiceProvider.test-client-id-for-e2e.LastAuthUser
+ *   CognitoIdentityServiceProvider.test-client-id-for-e2e.{username}.idToken
  *   etc.
+ *
+ * Post-logout navigation: call skipNextAuthInjection(page) before page.goto() to prevent
+ * addInitScript from re-injecting auth tokens on the next full page load.
  */
 
 export interface MockUser {
   sub: string;
   email: string;
   username?: string;
+}
+
+export interface MockCognitoRoutesOptions {
+  /** When true, skips localStorage token injection (use for tests that test the login flow itself). */
+  skipInjection?: boolean;
+}
+
+/**
+ * Sets a sessionStorage flag that causes the next page load's addInitScript to skip
+ * auth token injection. Use this before page.goto() when testing post-logout navigation.
+ *
+ * sessionStorage persists across same-origin full page navigations within the same tab,
+ * so setting this flag before page.goto() ensures the flag is visible to addInitScript.
+ */
+export async function skipNextAuthInjection(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    sessionStorage.setItem("__e2e_skip_auth_injection__", "true");
+  });
 }
 
 /**
@@ -57,15 +78,18 @@ export function createFakeJwt(
  * Must be called BEFORE the page navigates to any route (or right after
  * `page.goto(url, { waitUntil: 'commit' })`).
  *
- * The clientId key comes from `VITE_COGNITO_CLIENT_ID` which is empty ("") in
- * the test environment, so keys are prefixed with "CognitoIdentityServiceProvider..".
+ * The clientId key comes from `VITE_COGNITO_CLIENT_ID` ("test-client-id-for-e2e" in
+ * the test environment), so keys are prefixed with "CognitoIdentityServiceProvider.test-client-id-for-e2e.".
+ *
+ * If sessionStorage.__e2e_skip_auth_injection__ is "true", injection is skipped
+ * (flag is NOT removed here; the caller script removes it after all init scripts run).
  */
 export async function injectAuthState(
   page: Page,
   user: MockUser,
 ): Promise<void> {
   const { sub, email, username = email } = user;
-  const clientId = ""; // matches VITE_COGNITO_CLIENT_ID="" in test env
+  const clientId = "test-client-id-for-e2e"; // matches VITE_COGNITO_CLIENT_ID in playwright.config.ts
 
   const idToken = createFakeJwt({
     sub,
@@ -80,7 +104,9 @@ export async function injectAuthState(
     token_use: "access",
   });
 
-  // Inject via page.addInitScript so it runs before React/Amplify initialises
+  // Inject via page.addInitScript so it runs before React/Amplify initialises.
+  // Checks skip flag but does NOT remove it (removal is done by the last addInitScript
+  // registered in mockCognitoRoutes to ensure all scripts see the flag).
   await page.addInitScript(
     ({
       clientId,
@@ -93,6 +119,9 @@ export async function injectAuthState(
       idToken: string;
       accessToken: string;
     }) => {
+      if (sessionStorage.getItem("__e2e_skip_auth_injection__") === "true") {
+        return; // skip injection; flag cleared by the subsequent addInitScript
+      }
       const prefix = `CognitoIdentityServiceProvider.${clientId}`;
       localStorage.setItem(`${prefix}.LastAuthUser`, username);
       localStorage.setItem(`${prefix}.${username}.idToken`, idToken);
@@ -110,18 +139,24 @@ export async function injectAuthState(
 /**
  * Mocks all Cognito IdentityProvider API calls so tests don't hit the real
  * AWS endpoint.  Covers:
- *   - InitiateAuth  → returns USER_SRP_AUTH or direct auth success
+ *   - InitiateAuth  → returns direct auth success (USER_PASSWORD_AUTH compatible)
  *   - RespondToAuthChallenge → returns tokens
  *   - GetUser → returns user attributes
  *   - GlobalSignOut → success
  *   - RevokeToken → success
+ *
+ * @param options.skipInjection - When true, skips localStorage token injection.
+ *   Use for tests that exercise the actual login UI flow (signIn() call), where
+ *   pre-existing tokens would cause "There is already a signed in user" errors.
  */
 export async function mockCognitoRoutes(
   page: Page,
   user: MockUser,
+  options: MockCognitoRoutesOptions = {},
 ): Promise<void> {
   const { sub, email, username = email } = user;
-  const clientId = "";
+  const clientId = "test-client-id-for-e2e";
+  const { skipInjection = false } = options;
 
   const idToken = createFakeJwt({
     sub,
@@ -216,26 +251,36 @@ export async function mockCognitoRoutes(
     });
   });
 
-  // Inject tokens into localStorage for session restoration
-  await injectAuthState(page, { sub, email, username });
+  if (!skipInjection) {
+    // Inject tokens into localStorage for session restoration
+    await injectAuthState(page, { sub, email, username });
 
-  // Override Amplify's getCurrentUser to return mock data
-  await page.addInitScript(
-    ({
-      sub,
-      email,
-      clientId,
-    }: { sub: string; email: string; clientId: string }) => {
-      // Store mock user info so the app can read it
-      const prefix = `CognitoIdentityServiceProvider.${clientId}`;
-      // Ensure LastAuthUser is set (belt-and-suspenders with injectAuthState)
-      if (!localStorage.getItem(`${prefix}.LastAuthUser`)) {
-        localStorage.setItem(`${prefix}.LastAuthUser`, email);
-      }
-      // Tag this session so test helpers can detect it
-      localStorage.setItem("__e2e_mock_user_sub__", sub);
-      localStorage.setItem("__e2e_mock_user_email__", email);
-    },
-    { sub, email, clientId },
-  );
+    // This is the LAST addInitScript registered; it is responsible for removing
+    // the __e2e_skip_auth_injection__ flag after all init scripts have been checked.
+    await page.addInitScript(
+      ({
+        sub,
+        email,
+        clientId,
+      }: { sub: string; email: string; clientId: string }) => {
+        const shouldSkip =
+          sessionStorage.getItem("__e2e_skip_auth_injection__") === "true";
+        // Always remove the flag here (this is the last addInitScript)
+        sessionStorage.removeItem("__e2e_skip_auth_injection__");
+
+        if (shouldSkip) return;
+
+        // Store mock user info so the app can read it
+        const prefix = `CognitoIdentityServiceProvider.${clientId}`;
+        // Ensure LastAuthUser is set (belt-and-suspenders with injectAuthState)
+        if (!localStorage.getItem(`${prefix}.LastAuthUser`)) {
+          localStorage.setItem(`${prefix}.LastAuthUser`, email);
+        }
+        // Tag this session so test helpers can detect it
+        localStorage.setItem("__e2e_mock_user_sub__", sub);
+        localStorage.setItem("__e2e_mock_user_email__", email);
+      },
+      { sub, email, clientId },
+    );
+  }
 }

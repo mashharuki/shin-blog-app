@@ -17,7 +17,7 @@ vi.mock("react-router-dom", async () => {
 
 // Mock useAuth
 const mockSignIn = vi.fn();
-vi.mock("../hooks/useAuth.js", () => ({
+vi.mock("../context/AuthContext.js", () => ({
   useAuth: () => ({
     user: null,
     isLoading: false,

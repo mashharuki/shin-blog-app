@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { mockApiRoutes } from "./helpers/api-mocks.js";
-import { mockCognitoRoutes } from "./helpers/auth.js";
+import { mockCognitoRoutes, skipNextAuthInjection } from "./helpers/auth.js";
 
 /**
  * テスト4: ログアウト → セッション切断
@@ -45,17 +45,21 @@ test.describe("ログアウト → セッション切断", () => {
   test("ログアウト後にブラウザの戻るボタンで /create に戻れない", async ({
     page,
   }) => {
-    // First, navigate to the create page (authenticated)
-    await page.goto("/create");
-    await expect(page).not.toHaveURL(/.*\/login/, { timeout: 10_000 });
-
-    // Navigate to home
+    // Start on home page as authenticated user (full page load – auth injected here)
     await page.goto("/");
     await expect(page.getByTestId("avatar-dropdown-trigger")).toBeVisible({
-      timeout: 8_000,
+      timeout: 10_000,
     });
 
-    // Log out
+    // Navigate to /create via SPA (clicking the NavBar button) so that /create
+    // is in the SPA history stack but NOT as a separate full-page document.
+    // This way page.goBack() later will trigger a popstate (SPA navigation) back
+    // to /create rather than a full document restore, ensuring React Router and
+    // ProtectedRoute can re-evaluate auth state correctly.
+    await page.getByTestId("nav-create-button").click();
+    await expect(page).toHaveURL(/.*\/create/, { timeout: 8_000 });
+
+    // Log out from /create via NavBar avatar dropdown
     await page.getByTestId("avatar-dropdown-trigger").click();
     await expect(page.getByTestId("avatar-dropdown")).toBeVisible();
     await page.getByTestId("nav-logout-button").click();
@@ -63,9 +67,9 @@ test.describe("ログアウト → セッション切断", () => {
     // Wait for redirect to login page
     await expect(page).toHaveURL(/.*\/login/, { timeout: 8_000 });
 
-    // Now press the browser back button – should NOT return to /create
-    // React router's history still has /create in the stack, but
-    // ProtectedRoute should redirect unauthenticated users back to /login
+    // Press the browser back button – goes to /create (SPA popstate, same document).
+    // ProtectedRoute re-mounts, fetchAuthSession() returns empty (tokens cleared by
+    // signOut), user = null → redirects to /login.
     await page.goBack();
 
     // After going back, ProtectedRoute detects no auth and redirects to /login
@@ -88,6 +92,10 @@ test.describe("ログアウト → セッション切断", () => {
     await page.getByTestId("nav-logout-button").click();
     await expect(page).toHaveURL(/.*\/login/, { timeout: 8_000 });
 
+    // Prevent addInitScript from re-injecting auth tokens on the next full page
+    // load (sessionStorage persists across same-origin page.goto() calls).
+    await skipNextAuthInjection(page);
+
     // Try to navigate directly to /create while logged out
     await page.goto("/create");
     await expect(page).toHaveURL(/.*\/login/, { timeout: 8_000 });
@@ -107,8 +115,11 @@ test.describe("ログアウト → セッション切断", () => {
     await page.getByTestId("nav-logout-button").click();
     await expect(page).toHaveURL(/.*\/login/, { timeout: 8_000 });
 
-    // Navigate back to top page
-    await page.goto("/");
+    // Navigate to top page via SPA (click the "ホーム" NavBar link) to avoid
+    // a full page.goto("/") which would re-inject auth tokens via addInitScript.
+    await page.getByTestId("nav-home").click();
+    await expect(page).toHaveURL("/", { timeout: 5_000 });
+
     // NavBar should now show the login button (not the create/avatar buttons)
     await expect(page.getByTestId("nav-login-button")).toBeVisible({
       timeout: 5_000,
