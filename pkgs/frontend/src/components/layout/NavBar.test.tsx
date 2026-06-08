@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -166,7 +166,7 @@ describe("NavBar", () => {
       expect(screen.getByTestId("nav-logout-button")).toBeInTheDocument();
     });
 
-    it("ログアウトボタンをクリックすると signOut が呼ばれる (Requirement 2.2)", () => {
+    it("ログアウトボタンをクリックすると signOut が呼ばれる (Requirement 2.2)", async () => {
       const mockSignOut = vi.fn();
       mockUseAuth.mockReturnValue({
         user: mockUser,
@@ -177,7 +177,9 @@ describe("NavBar", () => {
       renderNavBar();
       fireEvent.click(screen.getByTestId("avatar-dropdown-trigger"));
       fireEvent.click(screen.getByTestId("nav-logout-button"));
-      expect(mockSignOut).toHaveBeenCalledTimes(1);
+      await waitFor(() => {
+        expect(mockSignOut).toHaveBeenCalledTimes(1);
+      });
     });
 
     it("アバタードロップダウンにユーザーのメールが表示される", () => {

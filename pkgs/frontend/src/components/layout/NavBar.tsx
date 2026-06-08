@@ -7,6 +7,12 @@ interface NavBarProps {
   onDarkModeToggle: () => void;
 }
 
+const navLinkClass =
+  "rounded-md px-3 py-2 text-sm font-medium text-[var(--color-text)] transition-colors hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-text-strong)]";
+
+const mobileLinkClass =
+  "block rounded-md px-3 py-2 text-sm font-medium text-[var(--color-text)] transition-colors hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-text-strong)]";
+
 export function NavBar({ darkMode, onDarkModeToggle }: NavBarProps) {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
@@ -20,472 +26,203 @@ export function NavBar({ darkMode, onDarkModeToggle }: NavBarProps) {
     } finally {
       navigate("/login");
       setAvatarDropdownOpen(false);
-    }
-  };
-
-  const handleMobileSignOut = async () => {
-    try {
-      await signOut();
-    } finally {
-      navigate("/login");
       setMobileMenuOpen(false);
     }
   };
 
-  // Avatar initial from email
   const avatarInitial = user?.email ? user.email.charAt(0).toUpperCase() : "U";
 
   return (
     <header
       data-testid="navbar"
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 50,
-        backdropFilter: "blur(14px)",
-        WebkitBackdropFilter: "blur(14px)",
-        background: darkMode
-          ? "rgba(15, 23, 42, 0.85)"
-          : "rgba(255, 255, 255, 0.85)",
-        borderBottom: darkMode ? "1px solid #1e293b" : "1px solid #e2e8f0",
-        fontFamily: "system-ui, sans-serif",
-      }}
+      className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-surface)]/90 text-[var(--color-text)] shadow-sm backdrop-blur"
     >
-      {/* Main nav row */}
       <nav
-        style={{
-          maxWidth: 1200,
-          margin: "0 auto",
-          padding: "0 16px",
-          height: 56,
-          display: "flex",
-          alignItems: "center",
-          gap: 16,
-        }}
+        className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4"
+        aria-label="グローバルナビゲーション"
       >
-        {/* Logo */}
         <Link
           data-testid="navbar-logo"
           to="/"
-          style={{
-            textDecoration: "none",
-            fontWeight: 800,
-            fontSize: 18,
-            color: darkMode ? "#f8fafc" : "#1e293b",
-            letterSpacing: "-0.5px",
-            flexShrink: 0,
-          }}
+          className="shrink-0 rounded-md text-lg font-extrabold tracking-[-0.02em] text-[var(--color-text-strong)] transition-colors hover:text-[var(--color-primary)]"
         >
           Shin Tech Blog
         </Link>
 
-        {/* Desktop nav links */}
-        <div
-          style={{
-            display: "flex",
-            gap: 4,
-            alignItems: "center",
-          }}
-          className="desktop-nav"
-        >
-          <Link
-            data-testid="nav-home"
-            to="/"
-            style={{
-              textDecoration: "none",
-              padding: "6px 12px",
-              borderRadius: 6,
-              fontSize: 14,
-              fontWeight: 500,
-              color: darkMode ? "#cbd5e1" : "#475569",
-            }}
-          >
+        <div className="hidden items-center gap-1 md:flex">
+          <Link data-testid="nav-home" to="/" className={navLinkClass}>
             ホーム
           </Link>
           <Link
             data-testid="nav-tags"
             to="/?view=tags"
-            style={{
-              textDecoration: "none",
-              padding: "6px 12px",
-              borderRadius: 6,
-              fontSize: 14,
-              fontWeight: 500,
-              color: darkMode ? "#cbd5e1" : "#475569",
-            }}
+            className={navLinkClass}
           >
             タグ
           </Link>
           <Link
             data-testid="nav-trending"
             to="/?view=trending"
-            style={{
-              textDecoration: "none",
-              padding: "6px 12px",
-              borderRadius: 6,
-              fontSize: 14,
-              fontWeight: 500,
-              color: darkMode ? "#cbd5e1" : "#475569",
-            }}
+            className={navLinkClass}
           >
             人気
           </Link>
         </div>
 
-        {/* Spacer */}
-        <div style={{ flex: 1 }} />
+        <div className="min-w-0 flex-1" />
 
-        {/* Dark mode toggle */}
         <button
           type="button"
           data-testid="dark-mode-toggle"
           onClick={onDarkModeToggle}
           aria-label={darkMode ? "ライトモードに切替" : "ダークモードに切替"}
-          style={{
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            padding: "6px 8px",
-            borderRadius: 6,
-            fontSize: 18,
-            color: darkMode ? "#fbbf24" : "#475569",
-            flexShrink: 0,
-          }}
+          className="rounded-md px-2 py-1.5 text-lg text-[var(--color-text)] transition-colors hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-text-strong)]"
         >
           {darkMode ? "☀️" : "🌙"}
         </button>
 
-        {/* Auth-dependent buttons (desktop) */}
         {user ? (
           <>
-            {/* Create post button */}
             <Link
               data-testid="nav-create-button"
               to="/create"
-              style={{
-                textDecoration: "none",
-                padding: "6px 16px",
-                borderRadius: 8,
-                background: "#6366f1",
-                color: "#fff",
-                fontSize: 14,
-                fontWeight: 600,
-                flexShrink: 0,
-              }}
+              className="hidden shrink-0 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-primary-strong)] md:inline-flex"
             >
               投稿する
             </Link>
 
-            {/* Avatar dropdown */}
-            <div style={{ position: "relative", flexShrink: 0 }}>
+            <div className="relative hidden shrink-0 md:block">
               <button
                 type="button"
                 data-testid="avatar-dropdown-trigger"
                 onClick={() => setAvatarDropdownOpen((v) => !v)}
                 aria-expanded={avatarDropdownOpen}
-                aria-haspopup="true"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: 4,
-                  borderRadius: 8,
-                }}
+                aria-haspopup="menu"
+                aria-label="ユーザーメニューを開く"
+                className="flex items-center gap-1 rounded-lg p-1 transition-colors hover:bg-[var(--color-surface-muted)]"
               >
-                <span
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: 32,
-                    height: 32,
-                    borderRadius: "50%",
-                    background: "#6366f1",
-                    color: "#fff",
-                    fontWeight: 700,
-                    fontSize: 14,
-                  }}
-                >
+                <span className="inline-flex size-8 items-center justify-center rounded-full bg-[var(--color-primary)] text-sm font-bold text-white">
                   {avatarInitial}
                 </span>
-                <span
-                  style={{
-                    fontSize: 10,
-                    color: darkMode ? "#94a3b8" : "#64748b",
-                  }}
-                >
-                  ▼
+                <span className="text-xs text-[var(--color-text-muted)]">
+                  {avatarDropdownOpen ? "▲" : "▼"}
                 </span>
               </button>
 
-              {avatarDropdownOpen && (
+              {avatarDropdownOpen ? (
                 <div
                   data-testid="avatar-dropdown"
-                  style={{
-                    position: "absolute",
-                    top: "calc(100% + 8px)",
-                    right: 0,
-                    background: darkMode ? "#1e293b" : "#fff",
-                    border: darkMode
-                      ? "1px solid #334155"
-                      : "1px solid #e2e8f0",
-                    borderRadius: 10,
-                    boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
-                    minWidth: 200,
-                    zIndex: 100,
-                    padding: "8px 0",
-                  }}
+                  role="menu"
+                  className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-64 overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-popover)]"
                 >
-                  {/* User info */}
-                  <div
-                    style={{
-                      padding: "8px 16px 12px",
-                      borderBottom: darkMode
-                        ? "1px solid #334155"
-                        : "1px solid #f1f5f9",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontWeight: 600,
-                        fontSize: 14,
-                        color: darkMode ? "#f8fafc" : "#1e293b",
-                        marginBottom: 2,
-                      }}
-                    >
+                  <div className="border-b border-[var(--color-border)] px-4 py-3">
+                    <div className="text-sm font-semibold text-[var(--color-text-strong)]">
                       {avatarInitial}
                     </div>
-                    <div
-                      style={{
-                        fontSize: 13,
-                        color: darkMode ? "#94a3b8" : "#64748b",
-                      }}
-                    >
+                    <div className="truncate text-sm text-[var(--color-text-muted)]">
                       {user.email}
                     </div>
                   </div>
-
-                  {/* Logout */}
                   <button
                     type="button"
                     data-testid="nav-logout-button"
+                    role="menuitem"
                     onClick={() => void handleSignOut()}
-                    style={{
-                      display: "block",
-                      width: "100%",
-                      padding: "10px 16px",
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      textAlign: "left",
-                      fontSize: 14,
-                      color: "#ef4444",
-                      fontWeight: 500,
-                    }}
+                    className="block w-full px-4 py-3 text-left text-sm font-semibold text-[var(--color-danger)] transition-colors hover:bg-[var(--color-danger-soft)]"
                   >
                     ログアウト
                   </button>
                 </div>
-              )}
+              ) : null}
             </div>
           </>
         ) : (
-          /* Login button */
           <Link
             data-testid="nav-login-button"
             to="/login"
-            style={{
-              textDecoration: "none",
-              padding: "6px 16px",
-              borderRadius: 8,
-              border: "1px solid #6366f1",
-              color: "#6366f1",
-              fontSize: 14,
-              fontWeight: 600,
-              flexShrink: 0,
-            }}
+            className="hidden shrink-0 rounded-lg border border-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary-soft)] md:inline-flex"
           >
             ログイン
           </Link>
         )}
 
-        {/* Mobile hamburger */}
         <button
           type="button"
           data-testid="mobile-menu-toggle"
           onClick={() => setMobileMenuOpen((v) => !v)}
           aria-expanded={mobileMenuOpen}
-          aria-label="メニューを開く"
-          style={{
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            padding: "6px 8px",
-            borderRadius: 6,
-            fontSize: 20,
-            color: darkMode ? "#cbd5e1" : "#475569",
-            flexShrink: 0,
-          }}
+          aria-controls="mobile-menu"
+          aria-label={mobileMenuOpen ? "メニューを閉じる" : "メニューを開く"}
+          className="rounded-md px-2 py-1.5 text-xl text-[var(--color-text)] transition-colors hover:bg-[var(--color-surface-muted)] md:hidden"
         >
           {mobileMenuOpen ? "✕" : "☰"}
         </button>
       </nav>
 
-      {/* Mobile menu slide-down */}
-      {mobileMenuOpen && (
+      {mobileMenuOpen ? (
         <div
+          id="mobile-menu"
           data-testid="mobile-menu"
-          style={{
-            borderTop: darkMode ? "1px solid #1e293b" : "1px solid #e2e8f0",
-            background: darkMode
-              ? "rgba(15, 23, 42, 0.97)"
-              : "rgba(255, 255, 255, 0.97)",
-            padding: "12px 16px 16px",
-          }}
+          className="border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 md:hidden"
         >
-          {/* Nav links */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 4,
-              marginBottom: 12,
-            }}
-          >
+          <div className="space-y-1">
             <Link
               to="/"
               onClick={() => setMobileMenuOpen(false)}
-              style={{
-                textDecoration: "none",
-                padding: "8px 12px",
-                borderRadius: 6,
-                fontSize: 15,
-                fontWeight: 500,
-                color: darkMode ? "#cbd5e1" : "#475569",
-              }}
+              className={mobileLinkClass}
             >
               ホーム
             </Link>
             <Link
               to="/?view=tags"
               onClick={() => setMobileMenuOpen(false)}
-              style={{
-                textDecoration: "none",
-                padding: "8px 12px",
-                borderRadius: 6,
-                fontSize: 15,
-                fontWeight: 500,
-                color: darkMode ? "#cbd5e1" : "#475569",
-              }}
+              className={mobileLinkClass}
             >
               タグ
             </Link>
             <Link
               to="/?view=trending"
               onClick={() => setMobileMenuOpen(false)}
-              style={{
-                textDecoration: "none",
-                padding: "8px 12px",
-                borderRadius: 6,
-                fontSize: 15,
-                fontWeight: 500,
-                color: darkMode ? "#cbd5e1" : "#475569",
-              }}
+              className={mobileLinkClass}
             >
               人気
             </Link>
           </div>
 
-          {/* Auth section */}
-          {user ? (
-            <div
-              style={{
-                borderTop: darkMode ? "1px solid #334155" : "1px solid #f1f5f9",
-                paddingTop: 12,
-              }}
-            >
-              {/* User info */}
-              <div
-                style={{
-                  padding: "4px 12px 8px",
-                  fontSize: 13,
-                  color: darkMode ? "#94a3b8" : "#64748b",
-                }}
-              >
-                {user.email}
-              </div>
-
-              <Link
-                to="/create"
-                onClick={() => setMobileMenuOpen(false)}
-                style={{
-                  display: "block",
-                  padding: "8px 12px",
-                  borderRadius: 8,
-                  background: "#6366f1",
-                  color: "#fff",
-                  fontSize: 14,
-                  fontWeight: 600,
-                  textDecoration: "none",
-                  textAlign: "center",
-                  marginBottom: 8,
-                }}
-              >
-                投稿する
-              </Link>
-
-              <button
-                type="button"
-                data-testid="mobile-logout-button"
-                onClick={() => void handleMobileSignOut()}
-                style={{
-                  display: "block",
-                  width: "100%",
-                  padding: "8px 12px",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  fontSize: 14,
-                  color: "#ef4444",
-                  fontWeight: 500,
-                  borderRadius: 6,
-                }}
-              >
-                ログアウト
-              </button>
-            </div>
-          ) : (
-            <div
-              style={{
-                borderTop: darkMode ? "1px solid #334155" : "1px solid #f1f5f9",
-                paddingTop: 12,
-              }}
-            >
+          <div className="mt-3 border-t border-[var(--color-border)] pt-3">
+            {user ? (
+              <>
+                <div className="truncate px-3 pb-2 text-sm text-[var(--color-text-muted)]">
+                  {user.email}
+                </div>
+                <Link
+                  to="/create"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="mb-2 block rounded-lg bg-[var(--color-primary)] px-3 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-[var(--color-primary-strong)]"
+                >
+                  投稿する
+                </Link>
+                <button
+                  type="button"
+                  data-testid="mobile-logout-button"
+                  onClick={() => void handleSignOut()}
+                  className="block w-full rounded-md px-3 py-2 text-left text-sm font-semibold text-[var(--color-danger)] transition-colors hover:bg-[var(--color-danger-soft)]"
+                >
+                  ログアウト
+                </button>
+              </>
+            ) : (
               <Link
                 to="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                style={{
-                  display: "block",
-                  padding: "8px 12px",
-                  borderRadius: 8,
-                  border: "1px solid #6366f1",
-                  color: "#6366f1",
-                  fontSize: 14,
-                  fontWeight: 600,
-                  textDecoration: "none",
-                  textAlign: "center",
-                }}
+                className="block rounded-lg border border-[var(--color-primary)] px-3 py-2 text-center text-sm font-semibold text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary-soft)]"
               >
                 ログイン
               </Link>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      )}
+      ) : null}
     </header>
   );
 }

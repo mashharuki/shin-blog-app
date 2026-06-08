@@ -19,11 +19,11 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
           alignItems: "center",
           height: "100vh",
           fontFamily: "system-ui, sans-serif",
-          color: "#94a3b8",
+          color: "var(--color-text-subtle)",
           fontSize: 16,
         }}
       >
-        <div>読み込み中...</div>
+        <div>読み込み中…</div>
       </div>
     );
   }

@@ -15,6 +15,13 @@ interface TocHeading {
   id: string;
 }
 
+interface PostResource {
+  requestedPostId: string | null;
+  post: Post | null;
+  allPosts: PostSummary[];
+  error: string | null;
+}
+
 /** Extract h1-h3 headings from raw markdown using a regex. */
 function extractHeadings(content: string): TocHeading[] {
   const regex = /^(#{1,3})\s+(.+)$/gm;
@@ -66,7 +73,7 @@ function AuthorAvatar({ name }: { name: string }) {
         width: 44,
         height: 44,
         borderRadius: "50%",
-        background: "#6366f1",
+        background: "var(--color-primary)",
         color: "#fff",
         fontWeight: 700,
         fontSize: 18,
@@ -118,7 +125,11 @@ function TableOfContents({ headings }: { headings: TocHeading[] }) {
         >
           <a
             href={`#${h.id}`}
-            style={{ fontSize: 13, color: "#64748b", textDecoration: "none" }}
+            style={{
+              fontSize: 13,
+              color: "var(--color-text-muted)",
+              textDecoration: "none",
+            }}
           >
             {h.text}
           </a>
@@ -130,7 +141,7 @@ function TableOfContents({ headings }: { headings: TocHeading[] }) {
   return (
     <nav data-testid="toc" aria-label="目次">
       {/* Mobile: accordion */}
-      <div style={{ marginBottom: 16 }}>
+      <div className="lg:hidden" style={{ marginBottom: 16 }}>
         <button
           type="button"
           data-testid="toc-toggle"
@@ -142,13 +153,13 @@ function TableOfContents({ headings }: { headings: TocHeading[] }) {
             justifyContent: "space-between",
             alignItems: "center",
             padding: "10px 16px",
-            background: "#f8fafc",
-            border: "1px solid #e2e8f0",
+            background: "var(--color-surface-muted)",
+            border: "1px solid var(--color-border)",
             borderRadius: mobileOpen ? "8px 8px 0 0" : 8,
             cursor: "pointer",
             fontWeight: 600,
             fontSize: 14,
-            color: "#1e293b",
+            color: "var(--color-text-strong)",
           }}
         >
           <span>目次</span>
@@ -158,8 +169,8 @@ function TableOfContents({ headings }: { headings: TocHeading[] }) {
           <div
             style={{
               padding: "12px 16px",
-              background: "#f8fafc",
-              border: "1px solid #e2e8f0",
+              background: "var(--color-surface-muted)",
+              border: "1px solid var(--color-border)",
               borderTop: "none",
               borderRadius: "0 0 8px 8px",
             }}
@@ -171,12 +182,13 @@ function TableOfContents({ headings }: { headings: TocHeading[] }) {
 
       {/* Desktop: always-open sticky panel (visible via CSS) */}
       <div
+        className="hidden lg:block"
         style={{
           position: "sticky",
           top: 24,
           padding: "16px",
-          background: "#f8fafc",
-          border: "1px solid #e2e8f0",
+          background: "var(--color-surface-muted)",
+          border: "1px solid var(--color-border)",
           borderRadius: 8,
         }}
       >
@@ -186,7 +198,7 @@ function TableOfContents({ headings }: { headings: TocHeading[] }) {
             fontSize: 13,
             marginTop: 0,
             marginBottom: 12,
-            color: "#1e293b",
+            color: "var(--color-text-strong)",
           }}
         >
           目次
@@ -203,33 +215,40 @@ export function BlogDetailPage() {
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
 
-  const [post, setPost] = useState<Post | null>(null);
-  const [allPosts, setAllPosts] = useState<PostSummary[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [resource, setResource] = useState<PostResource>({
+    requestedPostId: null,
+    post: null,
+    allPosts: [],
+    error: null,
+  });
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     if (!postId) return;
 
-    setIsLoading(true);
-    setError(null);
-
     void Promise.all([api.getPost(postId), api.getPosts()])
       .then(([fetchedPost, { posts }]) => {
-        setPost(fetchedPost);
-        setAllPosts(posts);
+        setResource({
+          requestedPostId: postId,
+          post: fetchedPost,
+          allPosts: posts,
+          error: null,
+        });
       })
       .catch((err: unknown) => {
-        setError(
-          err instanceof Error ? err.message : "記事の取得に失敗しました",
-        );
-      })
-      .finally(() => {
-        setIsLoading(false);
+        setResource({
+          requestedPostId: postId,
+          post: null,
+          allPosts: [],
+          error:
+            err instanceof Error ? err.message : "記事の取得に失敗しました",
+        });
       });
   }, [postId]);
+
+  const isLoading = resource.requestedPostId !== postId;
+  const { post, allPosts, error } = resource;
 
   const handleBack = () => {
     navigate(-1);
@@ -247,8 +266,8 @@ export function BlogDetailPage() {
           fontFamily: "system-ui, sans-serif",
         }}
       >
-        <p data-testid="loading" style={{ color: "#94a3b8" }}>
-          読み込み中...
+        <p data-testid="loading" style={{ color: "var(--color-text-subtle)" }}>
+          読み込み中…
         </p>
       </div>
     );
@@ -268,7 +287,11 @@ export function BlogDetailPage() {
       >
         <p
           data-testid="error-message"
-          style={{ fontSize: 18, color: "#ef4444", marginBottom: 16 }}
+          style={{
+            fontSize: 18,
+            color: "var(--color-danger)",
+            marginBottom: 16,
+          }}
         >
           {error ?? "記事が見つかりません"}
         </p>
@@ -276,7 +299,7 @@ export function BlogDetailPage() {
           data-testid="back-to-top-link"
           href="/"
           style={{
-            color: "#6366f1",
+            color: "var(--color-primary)",
             textDecoration: "underline",
             fontSize: 15,
           }}
@@ -306,6 +329,7 @@ export function BlogDetailPage() {
         margin: "0 auto",
         padding: "24px 16px",
         fontFamily: "system-ui, sans-serif",
+        color: "var(--color-text)",
       }}
     >
       {/* Back navigation */}
@@ -319,11 +343,11 @@ export function BlogDetailPage() {
           gap: 6,
           padding: "8px 16px",
           background: "none",
-          border: "1px solid #e2e8f0",
+          border: "1px solid var(--color-border)",
           borderRadius: 8,
           cursor: "pointer",
           fontSize: 14,
-          color: "#64748b",
+          color: "var(--color-text-muted)",
           marginBottom: 28,
         }}
       >
@@ -332,9 +356,8 @@ export function BlogDetailPage() {
 
       {/* Content layout: article + TOC sidebar */}
       <div
+        className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10"
         style={{
-          display: "flex",
-          gap: 40,
           alignItems: "flex-start",
         }}
       >
@@ -347,7 +370,7 @@ export function BlogDetailPage() {
               fontSize: 32,
               fontWeight: 800,
               lineHeight: 1.3,
-              color: "#1e293b",
+              color: "var(--color-text-strong)",
               marginTop: 0,
               marginBottom: 20,
             }}
@@ -374,14 +397,18 @@ export function BlogDetailPage() {
               gap: 12,
               marginBottom: 32,
               paddingBottom: 20,
-              borderBottom: "1px solid #e2e8f0",
+              borderBottom: "1px solid var(--color-border)",
             }}
           >
             <AuthorAvatar name={post.authorName} />
             <div style={{ flex: 1 }}>
               <div
                 data-testid="author-name"
-                style={{ fontWeight: 600, fontSize: 15, color: "#1e293b" }}
+                style={{
+                  fontWeight: 600,
+                  fontSize: 15,
+                  color: "var(--color-text-strong)",
+                }}
               >
                 {post.authorName}
               </div>
@@ -391,7 +418,7 @@ export function BlogDetailPage() {
                   gap: 12,
                   marginTop: 2,
                   fontSize: 13,
-                  color: "#64748b",
+                  color: "var(--color-text-muted)",
                   flexWrap: "wrap",
                 }}
               >
@@ -412,12 +439,18 @@ export function BlogDetailPage() {
                 aria-label="いいね"
                 style={{
                   padding: "6px 14px",
-                  border: liked ? "2px solid #ef4444" : "1px solid #e2e8f0",
+                  border: liked
+                    ? "2px solid var(--color-danger)"
+                    : "1px solid var(--color-border)",
                   borderRadius: 8,
-                  background: liked ? "#fff1f1" : "#fff",
+                  background: liked
+                    ? "var(--color-danger-soft)"
+                    : "var(--color-surface)",
                   cursor: "pointer",
                   fontSize: 14,
-                  color: liked ? "#ef4444" : "#64748b",
+                  color: liked
+                    ? "var(--color-danger)"
+                    : "var(--color-text-muted)",
                 }}
               >
                 {liked ? "❤️" : "🤍"}
@@ -430,12 +463,18 @@ export function BlogDetailPage() {
                 aria-label="保存"
                 style={{
                   padding: "6px 14px",
-                  border: saved ? "2px solid #6366f1" : "1px solid #e2e8f0",
+                  border: saved
+                    ? "2px solid var(--color-primary)"
+                    : "1px solid var(--color-border)",
                   borderRadius: 8,
-                  background: saved ? "#eef2ff" : "#fff",
+                  background: saved
+                    ? "var(--color-primary-soft)"
+                    : "var(--color-surface)",
                   cursor: "pointer",
                   fontSize: 14,
-                  color: saved ? "#6366f1" : "#64748b",
+                  color: saved
+                    ? "var(--color-primary)"
+                    : "var(--color-text-muted)",
                 }}
               >
                 🔖
@@ -451,12 +490,12 @@ export function BlogDetailPage() {
                 aria-label="シェア"
                 style={{
                   padding: "6px 14px",
-                  border: "1px solid #e2e8f0",
+                  border: "1px solid var(--color-border)",
                   borderRadius: 8,
-                  background: "#fff",
+                  background: "var(--color-surface)",
                   cursor: "pointer",
                   fontSize: 14,
-                  color: "#64748b",
+                  color: "var(--color-text-muted)",
                 }}
               >
                 共有
@@ -467,7 +506,11 @@ export function BlogDetailPage() {
           {/* Markdown content */}
           <div
             data-testid="post-content"
-            style={{ lineHeight: 1.8, color: "#334155", fontSize: 16 }}
+            style={{
+              lineHeight: 1.8,
+              color: "var(--color-text)",
+              fontSize: 16,
+            }}
           >
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
@@ -480,9 +523,9 @@ export function BlogDetailPage() {
 
         {/* Desktop sticky TOC sidebar */}
         <aside
+          className="w-full lg:w-64 lg:shrink-0"
           style={{
             flexShrink: 0,
-            width: 260,
           }}
         >
           <TableOfContents headings={headings} />
@@ -496,14 +539,14 @@ export function BlogDetailPage() {
           style={{
             marginTop: 48,
             paddingTop: 32,
-            borderTop: "1px solid #e2e8f0",
+            borderTop: "1px solid var(--color-border)",
           }}
         >
           <h2
             style={{
               fontSize: 20,
               fontWeight: 700,
-              color: "#1e293b",
+              color: "var(--color-text-strong)",
               marginTop: 0,
               marginBottom: 20,
             }}
@@ -525,11 +568,11 @@ export function BlogDetailPage() {
                 style={{
                   display: "block",
                   padding: "16px 20px",
-                  border: "1px solid #e2e8f0",
+                  border: "1px solid var(--color-border)",
                   borderRadius: 12,
                   textDecoration: "none",
                   color: "inherit",
-                  background: "#fff",
+                  background: "var(--color-surface)",
                   transition: "border-color 0.2s, box-shadow 0.2s",
                 }}
               >
@@ -542,7 +585,7 @@ export function BlogDetailPage() {
                   style={{
                     fontSize: 15,
                     fontWeight: 600,
-                    color: "#1e293b",
+                    color: "var(--color-text-strong)",
                     margin: 0,
                     lineHeight: 1.4,
                   }}
@@ -552,7 +595,7 @@ export function BlogDetailPage() {
                 <p
                   style={{
                     fontSize: 13,
-                    color: "#64748b",
+                    color: "var(--color-text-muted)",
                     marginTop: 6,
                     marginBottom: 0,
                   }}

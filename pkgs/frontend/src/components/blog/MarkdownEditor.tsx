@@ -6,9 +6,13 @@ import remarkGfm from "remark-gfm";
 type PaneMode = "edit" | "split" | "preview";
 
 export interface MarkdownEditorProps {
+  id?: string;
+  name?: string;
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  ariaDescribedBy?: string;
+  ariaInvalid?: boolean;
 }
 
 const TOOLBAR_ACTIONS = [
@@ -22,9 +26,13 @@ const TOOLBAR_ACTIONS = [
 ] as const;
 
 export function MarkdownEditor({
+  id,
+  name,
   value,
   onChange,
   placeholder,
+  ariaDescribedBy,
+  ariaInvalid,
 }: MarkdownEditorProps) {
   const [mode, setMode] = useState<PaneMode>("edit");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -57,11 +65,12 @@ export function MarkdownEditor({
   return (
     <div
       style={{
-        border: "1px solid #e2e8f0",
+        border: "1px solid var(--color-border)",
         borderRadius: 8,
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
+        background: "var(--color-surface)",
       }}
     >
       {/* Toolbar */}
@@ -70,8 +79,8 @@ export function MarkdownEditor({
           display: "flex",
           gap: 4,
           padding: "8px 12px",
-          borderBottom: "1px solid #e2e8f0",
-          background: "#f8fafc",
+          borderBottom: "1px solid var(--color-border)",
+          background: "var(--color-surface-muted)",
           flexWrap: "wrap",
         }}
       >
@@ -80,13 +89,15 @@ export function MarkdownEditor({
             key={action.title}
             type="button"
             title={action.title}
+            aria-label={action.title}
             onClick={() => insertAround(action.before, action.after)}
             style={{
               padding: "4px 8px",
               borderRadius: 4,
-              border: "1px solid #e2e8f0",
+              border: "1px solid var(--color-border)",
               cursor: "pointer",
-              background: "#fff",
+              background: "var(--color-surface)",
+              color: "var(--color-text-strong)",
               fontSize: 13,
             }}
           >
@@ -99,24 +110,32 @@ export function MarkdownEditor({
       <div
         style={{
           display: "flex",
-          borderBottom: "1px solid #e2e8f0",
-          background: "#f8fafc",
+          borderBottom: "1px solid var(--color-border)",
+          background: "var(--color-surface-muted)",
         }}
+        role="tablist"
+        aria-label="エディタ表示モード"
       >
         {(["edit", "split", "preview"] as const).map((m) => (
           <button
             key={m}
             type="button"
+            role="tab"
+            aria-selected={mode === m}
             onClick={() => setMode(m)}
             style={{
               padding: "6px 16px",
               border: "none",
               borderBottom:
-                mode === m ? "2px solid #3b82f6" : "2px solid transparent",
+                mode === m
+                  ? "2px solid var(--color-primary)"
+                  : "2px solid transparent",
               background: "none",
               cursor: "pointer",
               fontSize: 13,
               fontWeight: mode === m ? 600 : 400,
+              color:
+                mode === m ? "var(--color-primary)" : "var(--color-text-muted)",
             }}
           >
             {m === "edit" ? "編集" : m === "split" ? "分割" : "プレビュー"}
@@ -128,20 +147,24 @@ export function MarkdownEditor({
       <div style={{ display: "flex", minHeight: 300, flex: 1 }}>
         {showEdit && (
           <textarea
+            id={id}
+            name={name}
             ref={textareaRef}
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
+            aria-describedby={ariaDescribedBy}
+            aria-invalid={ariaInvalid ? "true" : undefined}
             style={{
               flex: 1,
               padding: 16,
               border: "none",
-              outline: "none",
               resize: "none",
               fontFamily: '"JetBrains Mono", "Fira Code", monospace',
               fontSize: 14,
               lineHeight: 1.6,
-              background: "#fff",
+              background: "var(--color-surface)",
+              color: "var(--color-text-strong)",
             }}
           />
         )}
@@ -151,8 +174,10 @@ export function MarkdownEditor({
             style={{
               flex: 1,
               padding: 16,
-              borderLeft: mode === "split" ? "1px solid #e2e8f0" : "none",
+              borderLeft:
+                mode === "split" ? "1px solid var(--color-border)" : "none",
               overflowY: "auto",
+              color: "var(--color-text)",
             }}
           >
             <ReactMarkdown
@@ -171,10 +196,10 @@ export function MarkdownEditor({
           display: "flex",
           gap: 16,
           padding: "4px 12px",
-          borderTop: "1px solid #e2e8f0",
-          background: "#f8fafc",
+          borderTop: "1px solid var(--color-border)",
+          background: "var(--color-surface-muted)",
           fontSize: 12,
-          color: "#94a3b8",
+          color: "var(--color-text-subtle)",
         }}
       >
         <span>{charCount}文字</span>

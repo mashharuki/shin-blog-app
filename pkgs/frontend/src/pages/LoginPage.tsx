@@ -65,7 +65,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="flex min-h-screen bg-[var(--color-bg)]">
       {/* Left column: hero section (desktop only) */}
       <div
         data-testid="hero-section"
@@ -87,7 +87,7 @@ export function LoginPage() {
               key={chip}
               className="px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm
                 text-sm font-medium border border-white/30
-                animate-bounce"
+                motion-reduce:animate-none animate-bounce"
               style={{ animationDelay: `${index * 0.15}s` }}
             >
               {chip}
@@ -97,17 +97,21 @@ export function LoginPage() {
       </div>
 
       {/* Right column: login form */}
-      <div className="flex w-full md:w-1/2 flex-col justify-center items-center p-8 bg-white">
+      <div className="flex w-full flex-col items-center justify-center bg-[var(--color-surface)] p-8 md:w-1/2">
         {/* Mobile logo */}
         <div className="md:hidden mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-900">Tech Blog</h1>
-          <p className="text-gray-500 mt-1">テクノロジーの知識を共有しよう</p>
+          <h1 className="text-3xl font-bold text-[var(--color-text-strong)]">
+            Tech Blog
+          </h1>
+          <p className="mt-1 text-[var(--color-text-muted)]">
+            テクノロジーの知識を共有しよう
+          </p>
         </div>
 
         <div className="w-full max-w-sm">
           <h2
             data-testid="login-title"
-            className="text-2xl font-bold text-gray-900 mb-6 text-center md:text-left"
+            className="mb-6 text-center text-2xl font-bold text-[var(--color-text-strong)] md:text-left"
           >
             ログイン
           </h2>
@@ -116,7 +120,9 @@ export function LoginPage() {
           {authError && (
             <div
               data-testid="auth-error"
-              className="mb-4 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm"
+              role="alert"
+              aria-live="polite"
+              className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700"
             >
               {authError}
             </div>
@@ -133,24 +139,28 @@ export function LoginPage() {
             <div className="mb-4">
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="mb-1 block text-sm font-medium text-[var(--color-text)]"
               >
                 メールアドレス
               </label>
               <input
                 id="email"
                 data-testid="email-input"
+                name="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2
-                  focus:ring-blue-500 transition
-                  ${emailError ? "border-red-400 focus:ring-red-400" : "border-gray-300"}`}
+                aria-invalid={emailError ? "true" : undefined}
+                aria-describedby={emailError ? "email-error" : undefined}
+                className={`w-full rounded-lg border bg-[var(--color-surface)] px-4 py-2 text-[var(--color-text-strong)] transition-colors
+                  ${emailError ? "border-red-400" : "border-[var(--color-border-strong)]"}`}
                 placeholder="example@mail.com"
                 autoComplete="email"
+                spellCheck={false}
               />
               {emailError && (
                 <p
+                  id="email-error"
                   data-testid="email-error"
                   className="mt-1 text-sm text-red-600"
                 >
@@ -163,24 +173,27 @@ export function LoginPage() {
             <div className="mb-6">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="mb-1 block text-sm font-medium text-[var(--color-text)]"
               >
                 パスワード
               </label>
               <input
                 id="password"
                 data-testid="password-input"
+                name="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2
-                  focus:ring-blue-500 transition
-                  ${passwordError ? "border-red-400 focus:ring-red-400" : "border-gray-300"}`}
+                aria-invalid={passwordError ? "true" : undefined}
+                aria-describedby={passwordError ? "password-error" : undefined}
+                className={`w-full rounded-lg border bg-[var(--color-surface)] px-4 py-2 text-[var(--color-text-strong)] transition-colors
+                  ${passwordError ? "border-red-400" : "border-[var(--color-border-strong)]"}`}
                 placeholder="パスワードを入力"
                 autoComplete="current-password"
               />
               {passwordError && (
                 <p
+                  id="password-error"
                   data-testid="password-error"
                   className="mt-1 text-sm text-red-600"
                 >
@@ -194,11 +207,9 @@ export function LoginPage() {
               data-testid="login-button"
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-700
-                text-white font-semibold transition disabled:opacity-50
-                disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg bg-[var(--color-primary)] px-4 py-2 font-semibold text-white transition-colors hover:bg-[var(--color-primary-strong)] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isSubmitting ? "ログイン中..." : "ログイン"}
+              {isSubmitting ? "ログイン中…" : "ログイン"}
             </button>
           </form>
         </div>

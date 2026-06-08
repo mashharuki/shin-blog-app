@@ -1,6 +1,7 @@
 import type { PostSummary } from "@shin-blog-app/shared";
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { describe, expect, it } from "vitest";
 import { BlogPostCard } from "./BlogPostCard.js";
 
 const mockPost: PostSummary = {
@@ -13,19 +14,27 @@ const mockPost: PostSummary = {
   excerpt: "This is a test excerpt for the blog post card.",
 };
 
+function renderCard(post: PostSummary = mockPost) {
+  return render(
+    <MemoryRouter>
+      <BlogPostCard post={post} to={`/posts/${post.postId}`} />
+    </MemoryRouter>,
+  );
+}
+
 describe("BlogPostCard", () => {
   it("renders title", () => {
-    render(<BlogPostCard post={mockPost} onClick={() => {}} />);
+    renderCard();
     expect(screen.getByText("Test Post Title")).toBeInTheDocument();
   });
 
   it("renders authorName", () => {
-    render(<BlogPostCard post={mockPost} onClick={() => {}} />);
+    renderCard();
     expect(screen.getByText(/john/)).toBeInTheDocument();
   });
 
   it("renders up to 3 tags", () => {
-    render(<BlogPostCard post={mockPost} onClick={() => {}} />);
+    renderCard();
     expect(screen.getByText("TypeScript")).toBeInTheDocument();
     expect(screen.getByText("AWS")).toBeInTheDocument();
     expect(screen.getByText("React")).toBeInTheDocument();
@@ -33,7 +42,7 @@ describe("BlogPostCard", () => {
 
   it("renders only 3 tags when 5 given", () => {
     const post: PostSummary = { ...mockPost, tags: ["A", "B", "C", "D", "E"] };
-    render(<BlogPostCard post={post} onClick={() => {}} />);
+    renderCard(post);
     expect(screen.getByText("A")).toBeInTheDocument();
     expect(screen.getByText("B")).toBeInTheDocument();
     expect(screen.getByText("C")).toBeInTheDocument();
@@ -42,39 +51,39 @@ describe("BlogPostCard", () => {
   });
 
   it("renders excerpt", () => {
-    render(<BlogPostCard post={mockPost} onClick={() => {}} />);
+    renderCard();
     expect(screen.getByText(/This is a test excerpt/)).toBeInTheDocument();
   });
 
-  it("calls onClick when card is clicked", () => {
-    const handleClick = vi.fn();
-    render(<BlogPostCard post={mockPost} onClick={handleClick} />);
-    const card = screen.getByTestId("blog-post-card");
-    fireEvent.click(card);
-    expect(handleClick).toHaveBeenCalledOnce();
+  it("renders as a link to the post detail page", () => {
+    renderCard();
+    expect(screen.getByTestId("blog-post-card")).toHaveAttribute(
+      "href",
+      "/posts/post-1",
+    );
   });
 
   it("renders readTime based on excerpt word count", () => {
     // excerpt "This is a test excerpt for the blog post card." = 9 words
     // Math.max(1, Math.ceil(9 / 200)) = 1
-    render(<BlogPostCard post={mockPost} onClick={() => {}} />);
+    renderCard();
     expect(screen.getByText(/1分/)).toBeInTheDocument();
   });
 
   it("renders createdAt date", () => {
-    render(<BlogPostCard post={mockPost} onClick={() => {}} />);
+    renderCard();
     // Should display some date string
     expect(screen.getByTestId("blog-post-card")).toBeInTheDocument();
   });
 
   it("applies data-testid to card element", () => {
-    render(<BlogPostCard post={mockPost} onClick={() => {}} />);
+    renderCard();
     expect(screen.getByTestId("blog-post-card")).toBeInTheDocument();
   });
 
   it("renders empty tags gracefully", () => {
     const post: PostSummary = { ...mockPost, tags: [] };
-    render(<BlogPostCard post={post} onClick={() => {}} />);
+    renderCard(post);
     expect(screen.getByText("Test Post Title")).toBeInTheDocument();
   });
 });

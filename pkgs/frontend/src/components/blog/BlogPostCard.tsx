@@ -1,9 +1,10 @@
 import type { PostSummary } from "@shin-blog-app/shared";
+import { Link } from "react-router-dom";
 import { getTagColor } from "../../lib/tagColors.js";
 
 export interface BlogPostCardProps {
   post: PostSummary;
-  onClick: () => void;
+  to: string;
 }
 
 /** Compute estimated read time from excerpt word count. */
@@ -37,7 +38,7 @@ function AuthorAvatar({ name }: { name: string }) {
         width: 32,
         height: 32,
         borderRadius: "50%",
-        background: "#6366f1",
+        background: "var(--color-primary)",
         color: "#fff",
         fontWeight: 700,
         fontSize: 14,
@@ -70,40 +71,16 @@ function TagBadge({ tag }: { tag: string }) {
   );
 }
 
-export function BlogPostCard({ post, onClick }: BlogPostCardProps) {
+export function BlogPostCard({ post, to }: BlogPostCardProps) {
   const { title, authorName, tags, createdAt, excerpt } = post;
   const readTime = calcReadTime(excerpt);
   const visibleTags = tags.slice(0, 3);
 
   return (
-    <button
-      type="button"
+    <Link
+      to={to}
       data-testid="blog-post-card"
-      onClick={onClick}
-      style={{
-        all: "unset",
-        display: "block",
-        width: "100%",
-        textAlign: "left",
-        border: "1px solid #e2e8f0",
-        borderRadius: 12,
-        padding: "20px 24px",
-        cursor: "pointer",
-        background: "#fff",
-        transition: "border-color 0.2s, box-shadow 0.2s, transform 0.2s",
-      }}
-      onMouseEnter={(e) => {
-        const el = e.currentTarget;
-        el.style.borderColor = "#6366f1";
-        el.style.boxShadow = "0 8px 24px rgba(99,102,241,0.15)";
-        el.style.transform = "translateY(-2px)";
-      }}
-      onMouseLeave={(e) => {
-        const el = e.currentTarget;
-        el.style.borderColor = "#e2e8f0";
-        el.style.boxShadow = "";
-        el.style.transform = "";
-      }}
+      className="block h-full rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 text-left no-underline shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[var(--color-primary)] hover:shadow-[var(--shadow-card)]"
     >
       {/* Author row */}
       <div
@@ -115,7 +92,13 @@ export function BlogPostCard({ post, onClick }: BlogPostCardProps) {
         }}
       >
         <AuthorAvatar name={authorName} />
-        <span style={{ fontSize: 13, color: "#64748b" }}>
+        <span
+          style={{
+            fontSize: 13,
+            color: "var(--color-text-muted)",
+            minWidth: 0,
+          }}
+        >
           {authorName}
           <span style={{ margin: "0 4px" }}>·</span>
           {formatDate(createdAt)}
@@ -133,7 +116,7 @@ export function BlogPostCard({ post, onClick }: BlogPostCardProps) {
           WebkitLineClamp: 2,
           WebkitBoxOrient: "vertical",
           overflow: "hidden",
-          color: "#1e293b",
+          color: "var(--color-text-strong)",
         }}
       >
         {title}
@@ -144,7 +127,7 @@ export function BlogPostCard({ post, onClick }: BlogPostCardProps) {
         style={{
           margin: "0 0 12px",
           fontSize: 14,
-          color: "#64748b",
+          color: "var(--color-text-muted)",
           lineHeight: 1.6,
           display: "-webkit-box",
           WebkitLineClamp: 3,
@@ -168,7 +151,7 @@ export function BlogPostCard({ post, onClick }: BlogPostCardProps) {
       <hr
         style={{
           border: "none",
-          borderTop: "1px solid #e2e8f0",
+          borderTop: "1px solid var(--color-border)",
           margin: "8px 0",
         }}
       />
@@ -180,11 +163,11 @@ export function BlogPostCard({ post, onClick }: BlogPostCardProps) {
           alignItems: "center",
           gap: 16,
           fontSize: 13,
-          color: "#94a3b8",
+          color: "var(--color-text-subtle)",
         }}
       >
         <span aria-label="読了時間">⏱ {readTime}分</span>
       </div>
-    </button>
+    </Link>
   );
 }

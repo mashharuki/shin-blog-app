@@ -86,36 +86,49 @@ export function BlogCreatePage() {
         margin: "0 auto",
         padding: "32px 16px",
         fontFamily: "system-ui, sans-serif",
+        color: "var(--color-text)",
       }}
     >
       <form onSubmit={(e) => void handleSubmit(e)}>
         {/* Title input – inline editable header style */}
         <div style={{ marginBottom: 24 }}>
+          <label htmlFor="post-title" className="sr-only">
+            記事タイトル
+          </label>
           <input
+            id="post-title"
             data-testid="title-input"
+            name="title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            aria-invalid={errors.title ? "true" : undefined}
+            aria-describedby={errors.title ? "title-error" : undefined}
             placeholder="記事タイトルを入力してください"
+            autoComplete="off"
             style={{
               width: "100%",
               fontSize: 32,
               fontWeight: 800,
               border: "none",
               borderBottom: errors.title
-                ? "2px solid #ef4444"
+                ? "2px solid var(--color-danger)"
                 : "2px solid transparent",
-              outline: "none",
               padding: "4px 0",
-              color: "#1e293b",
+              color: "var(--color-text-strong)",
               background: "transparent",
               boxSizing: "border-box",
             }}
           />
           {errors.title && (
             <p
+              id="title-error"
               data-testid="title-error"
-              style={{ color: "#ef4444", fontSize: 13, marginTop: 4 }}
+              style={{
+                color: "var(--color-danger)",
+                fontSize: 13,
+                marginTop: 4,
+              }}
             >
               {errors.title}
             </p>
@@ -141,8 +154,8 @@ export function BlogCreatePage() {
                   alignItems: "center",
                   gap: 4,
                   padding: "4px 10px",
-                  background: "#e0e7ff",
-                  color: "#4338ca",
+                  background: "var(--color-primary-soft)",
+                  color: "var(--color-primary-strong)",
                   borderRadius: 9999,
                   fontSize: 13,
                   fontWeight: 600,
@@ -160,7 +173,7 @@ export function BlogCreatePage() {
                     cursor: "pointer",
                     padding: 0,
                     fontSize: 14,
-                    color: "#4338ca",
+                    color: "var(--color-primary-strong)",
                     lineHeight: 1,
                   }}
                 >
@@ -169,13 +182,21 @@ export function BlogCreatePage() {
               </span>
             ))}
           </div>
+          <label htmlFor="post-tags" className="sr-only">
+            タグ
+          </label>
           <input
+            id="post-tags"
             data-testid="tag-input"
+            name="tags"
             type="text"
             value={tagInput}
             onChange={(e) => setTagInput(e.target.value)}
             onKeyDown={handleTagKeyDown}
             disabled={tags.length >= 5}
+            aria-invalid={errors.tags ? "true" : undefined}
+            aria-describedby={errors.tags ? "tags-error" : undefined}
+            autoComplete="off"
             placeholder={
               tags.length >= 5
                 ? "タグは最大5件です"
@@ -184,19 +205,26 @@ export function BlogCreatePage() {
             style={{
               width: "100%",
               padding: "8px 12px",
-              border: "1px solid #e2e8f0",
+              border: "1px solid var(--color-border)",
               borderRadius: 8,
               fontSize: 14,
-              outline: "none",
               boxSizing: "border-box",
-              background: tags.length >= 5 ? "#f8fafc" : "#fff",
-              color: tags.length >= 5 ? "#94a3b8" : "inherit",
+              background:
+                tags.length >= 5
+                  ? "var(--color-surface-muted)"
+                  : "var(--color-surface)",
+              color: tags.length >= 5 ? "var(--color-text-subtle)" : "inherit",
             }}
           />
           {errors.tags && (
             <p
+              id="tags-error"
               data-testid="tags-error"
-              style={{ color: "#ef4444", fontSize: 13, marginTop: 4 }}
+              style={{
+                color: "var(--color-danger)",
+                fontSize: 13,
+                marginTop: 4,
+              }}
             >
               {errors.tags}
             </p>
@@ -205,15 +233,27 @@ export function BlogCreatePage() {
 
         {/* Markdown editor */}
         <div style={{ marginBottom: 24 }}>
+          <label htmlFor="post-content" className="sr-only">
+            本文
+          </label>
           <MarkdownEditor
+            id="post-content"
+            name="content"
             value={content}
             onChange={setContent}
-            placeholder="本文をMarkdownで入力してください..."
+            placeholder="本文をMarkdownで入力してください…"
+            ariaDescribedBy={errors.content ? "content-error" : undefined}
+            ariaInvalid={Boolean(errors.content)}
           />
           {errors.content && (
             <p
+              id="content-error"
               data-testid="content-error"
-              style={{ color: "#ef4444", fontSize: 13, marginTop: 4 }}
+              style={{
+                color: "var(--color-danger)",
+                fontSize: 13,
+                marginTop: 4,
+              }}
             >
               {errors.content}
             </p>
@@ -224,13 +264,15 @@ export function BlogCreatePage() {
         {submitError && (
           <p
             data-testid="submit-error"
+            role="alert"
+            aria-live="polite"
             style={{
-              color: "#ef4444",
+              color: "var(--color-danger)",
               fontSize: 14,
               marginBottom: 16,
               padding: "8px 12px",
-              background: "#fff1f1",
-              border: "1px solid #fecaca",
+              background: "var(--color-danger-soft)",
+              border: "1px solid var(--color-danger)",
               borderRadius: 8,
             }}
           >
@@ -246,7 +288,9 @@ export function BlogCreatePage() {
             disabled={isSubmitDisabled}
             style={{
               padding: "10px 32px",
-              background: isSubmitDisabled ? "#94a3b8" : "#6366f1",
+              background: isSubmitDisabled
+                ? "var(--color-text-subtle)"
+                : "var(--color-primary)",
               color: "#fff",
               border: "none",
               borderRadius: 8,
@@ -256,7 +300,7 @@ export function BlogCreatePage() {
               transition: "background 0.2s",
             }}
           >
-            {isSubmitting ? "投稿中..." : "投稿する"}
+            {isSubmitting ? "投稿中…" : "投稿する"}
           </button>
         </div>
       </form>

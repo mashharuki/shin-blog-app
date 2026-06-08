@@ -1,14 +1,11 @@
 import type { PostSummary } from "@shin-blog-app/shared";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { BlogPostCard } from "../components/blog/BlogPostCard.js";
 import { api } from "../lib/api.js";
 
 type Tab = "latest" | "trending";
 
 export function TopPage() {
-  const navigate = useNavigate();
-
   const [posts, setPosts] = useState<PostSummary[]>([]);
   const [nextCursor, setNextCursor] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
@@ -98,10 +95,6 @@ export function TopPage() {
     setSelectedTag((prev) => (prev === tag ? null : tag));
   };
 
-  const handleCardClick = (postId: string) => {
-    navigate(`/posts/${postId}`);
-  };
-
   // ── Render ───────────────────────────────────────────────────
   return (
     <div
@@ -110,6 +103,7 @@ export function TopPage() {
         margin: "0 auto",
         padding: "24px 16px",
         fontFamily: "system-ui, sans-serif",
+        color: "var(--color-text)",
       }}
     >
       {/* Page title */}
@@ -118,7 +112,7 @@ export function TopPage() {
           fontSize: 28,
           fontWeight: 800,
           marginBottom: 24,
-          color: "#1e293b",
+          color: "var(--color-text-strong)",
         }}
       >
         Tech Blog
@@ -131,7 +125,7 @@ export function TopPage() {
           display: "flex",
           gap: 4,
           marginBottom: 20,
-          borderBottom: "2px solid #e2e8f0",
+          borderBottom: "2px solid var(--color-border)",
         }}
       >
         {(["latest", "trending"] as const).map((tab) => (
@@ -149,10 +143,13 @@ export function TopPage() {
               cursor: "pointer",
               fontWeight: 600,
               fontSize: 15,
-              color: activeTab === tab ? "#6366f1" : "#64748b",
+              color:
+                activeTab === tab
+                  ? "var(--color-primary)"
+                  : "var(--color-text-muted)",
               borderBottom:
                 activeTab === tab
-                  ? "2px solid #6366f1"
+                  ? "2px solid var(--color-primary)"
                   : "2px solid transparent",
               marginBottom: -2,
               transition: "color 0.2s",
@@ -165,20 +162,27 @@ export function TopPage() {
 
       {/* Search bar */}
       <div style={{ position: "relative", marginBottom: 20, maxWidth: 480 }}>
+        <label htmlFor="post-search" className="sr-only">
+          記事をタイトルまたはタグで検索
+        </label>
         <input
+          id="post-search"
           data-testid="search-input"
+          name="q"
           type="text"
-          placeholder="タイトル・タグで検索..."
+          autoComplete="off"
+          placeholder="タイトル・タグで検索…"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           style={{
             width: "100%",
             padding: "10px 40px 10px 14px",
-            border: "1px solid #cbd5e1",
+            border: "1px solid var(--color-border-strong)",
             borderRadius: 8,
             fontSize: 14,
-            outline: "none",
             boxSizing: "border-box",
+            background: "var(--color-surface)",
+            color: "var(--color-text-strong)",
           }}
         />
         {searchQuery && (
@@ -195,7 +199,7 @@ export function TopPage() {
               border: "none",
               cursor: "pointer",
               fontSize: 18,
-              color: "#94a3b8",
+              color: "var(--color-text-subtle)",
               lineHeight: 1,
             }}
             aria-label="検索をクリア"
@@ -227,14 +231,21 @@ export function TopPage() {
                 borderRadius: 9999,
                 border:
                   selectedTag === tag
-                    ? "2px solid #6366f1"
-                    : "1px solid #e2e8f0",
-                background: selectedTag === tag ? "#eef2ff" : "#f8fafc",
-                color: selectedTag === tag ? "#4f46e5" : "#475569",
+                    ? "2px solid var(--color-primary)"
+                    : "1px solid var(--color-border)",
+                background:
+                  selectedTag === tag
+                    ? "var(--color-primary-soft)"
+                    : "var(--color-surface-muted)",
+                color:
+                  selectedTag === tag
+                    ? "var(--color-primary-strong)"
+                    : "var(--color-text)",
                 fontWeight: selectedTag === tag ? 700 : 500,
                 fontSize: 13,
                 cursor: "pointer",
-                transition: "all 0.15s",
+                transition:
+                  "background-color 0.15s, border-color 0.15s, color 0.15s",
               }}
             >
               {tag}
@@ -247,9 +258,13 @@ export function TopPage() {
       {isLoading && posts.length === 0 && (
         <p
           data-testid="loading"
-          style={{ color: "#94a3b8", textAlign: "center", padding: "40px 0" }}
+          style={{
+            color: "var(--color-text-subtle)",
+            textAlign: "center",
+            padding: "40px 0",
+          }}
         >
-          読み込み中...
+          読み込み中…
         </p>
       )}
 
@@ -260,7 +275,7 @@ export function TopPage() {
           style={{
             textAlign: "center",
             padding: "60px 0",
-            color: "#94a3b8",
+            color: "var(--color-text-subtle)",
           }}
         >
           <p style={{ fontSize: 48, marginBottom: 16 }}>📭</p>
@@ -285,7 +300,7 @@ export function TopPage() {
             <BlogPostCard
               key={post.postId}
               post={post}
-              onClick={() => handleCardClick(post.postId)}
+              to={`/posts/${post.postId}`}
             />
           ))}
         </div>
@@ -302,9 +317,13 @@ export function TopPage() {
       {isLoading && posts.length > 0 && (
         <p
           data-testid="loading-more"
-          style={{ color: "#94a3b8", textAlign: "center", padding: "16px 0" }}
+          style={{
+            color: "var(--color-text-subtle)",
+            textAlign: "center",
+            padding: "16px 0",
+          }}
         >
-          読み込み中...
+          読み込み中…
         </p>
       )}
     </div>

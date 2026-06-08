@@ -4,9 +4,8 @@ import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Use vi.hoisted so these mocks are available inside the vi.mock factory
-const { mockGetPosts, mockNavigate } = vi.hoisted(() => ({
+const { mockGetPosts } = vi.hoisted(() => ({
   mockGetPosts: vi.fn(),
-  mockNavigate: vi.fn(),
 }));
 
 // Mock API
@@ -16,18 +15,6 @@ vi.mock("../lib/api.js", () => ({
   },
 }));
 
-// Mock useNavigate
-vi.mock("react-router-dom", async () => {
-  const actual =
-    await vi.importActual<typeof import("react-router-dom")>(
-      "react-router-dom",
-    );
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
-
 // Mock IntersectionObserver
 const mockObserve = vi.fn();
 const mockDisconnect = vi.fn();
@@ -36,10 +23,7 @@ class MockIntersectionObserver {
   disconnect = mockDisconnect;
   unobserve = vi.fn();
   callback: IntersectionObserverCallback;
-  constructor(
-    callback: IntersectionObserverCallback,
-    _options?: IntersectionObserverInit,
-  ) {
+  constructor(callback: IntersectionObserverCallback) {
     this.callback = callback;
   }
 }
@@ -132,15 +116,17 @@ describe("TopPage", () => {
   // 3.3 記事クリック → 詳細画面遷移
   // ──────────────────────────────────────────────────────────────
   describe("Requirement 3.3 – 詳細画面へ遷移", () => {
-    it("カードクリックで /posts/:postId へ navigate する", async () => {
+    it("カードが /posts/:postId へのリンクとして表示される", async () => {
       mockGetPosts.mockResolvedValue({
         posts: makePosts(1),
         nextCursor: undefined,
       });
       renderTopPage();
       await waitFor(() => screen.getByTestId("blog-post-card"));
-      fireEvent.click(screen.getByTestId("blog-post-card"));
-      expect(mockNavigate).toHaveBeenCalledWith("/posts/post-0");
+      expect(screen.getByTestId("blog-post-card")).toHaveAttribute(
+        "href",
+        "/posts/post-0",
+      );
     });
   });
 
