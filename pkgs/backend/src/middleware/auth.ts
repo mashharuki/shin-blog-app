@@ -1,6 +1,9 @@
 import { CognitoJwtVerifier } from "aws-jwt-verify";
+import * as dotenv from "dotenv";
 import type { MiddlewareHandler } from "hono";
 import type { HonoEnv } from "../types.js";
+
+dotenv.config();
 
 const isLocalDev = process.env.LOCAL_DEV === "true";
 

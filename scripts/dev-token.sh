@@ -14,7 +14,11 @@
 set -euo pipefail
 
 EMAIL="${1:-dev@local.test}"
-SUB="dev-user-$(echo "$EMAIL" | md5sum | cut -c1-8)"
+if command -v md5sum &>/dev/null; then
+  SUB="dev-user-$(echo "$EMAIL" | md5sum | cut -c1-8)"
+else
+  SUB="dev-user-$(echo "$EMAIL" | md5 -q | cut -c1-8)"
+fi
 
 # Build a simple base64url-encoded payload (no crypto — dev only)
 HEADER='{"alg":"none","typ":"JWT"}'

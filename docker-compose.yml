@@ -1,6 +1,6 @@
 services:
   floci:
-    image: ghcr.io/hectorvent/floci:latest
+    image: floci/floci:latest
     container_name: floci
     ports:
       - "4566:4566"

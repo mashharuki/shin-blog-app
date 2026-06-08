@@ -1,5 +1,7 @@
 {
-  "name": "backend",
+  "name": "@shin-blog-app/backend",
+  "private": true,
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
@@ -13,6 +15,7 @@
     "@hono/node-server": "^1.19.14",
     "@shin-blog-app/shared": "workspace:*",
     "aws-jwt-verify": "^4.0.0",
+    "dotenv": "^17.4.2",
     "hono": "^4.12.23",
     "uuid": "^9"
   },

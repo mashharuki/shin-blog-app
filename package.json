@@ -17,7 +17,10 @@
     "floci:up": "docker compose up -d",
     "floci:setup": "bash scripts/setup-local-aws.sh",
     "floci:down": "docker compose down",
-    "floci:token": "bash scripts/dev-token.sh"
+    "floci:token": "bash scripts/dev-token.sh",
+    "floci:cdk:bootstrap": "bash scripts/floci-cdk.sh bootstrap",
+    "floci:cdk:deploy": "bash scripts/floci-cdk.sh deploy --all --require-approval never",
+    "floci:cdk:destroy": "bash scripts/floci-cdk.sh destroy --force"
   },
   "keywords": [],
   "author": "",
