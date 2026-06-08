@@ -22,9 +22,9 @@ export class BlogStack extends cdk.Stack {
 
   /**
    * コンストラクター
-   * @param scope 
-   * @param id 
-   * @param props 
+   * @param scope
+   * @param id
+   * @param props
    */
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -140,7 +140,7 @@ export class BlogStack extends cdk.Stack {
     // ======================================================================================
 
     new cdk.CfnOutput(this, "UserPoolId", { value: this.userPool.userPoolId });
-    
+
     new cdk.CfnOutput(this, "UserPoolClientId", {
       value: this.userPoolClient.userPoolClientId,
     });
