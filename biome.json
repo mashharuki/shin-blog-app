@@ -27,7 +27,8 @@
       "**/.serena/**",
       "**/.aws-aidlc-rule-details/**",
       "**/tsconfig*.json",
-      "**/jest.config.*"
+      "**/jest.config.*",
+      "**/cdk/build"
     ]
   },
   "formatter": {
